@@ -18,9 +18,9 @@ namespace Jaeger\Sampler;
 
 interface Sampler
 {
-    public function IsSampled();
+    public function isSampled():bool;
 
-    public function Close();
+    public function close():void;
 
-    public function getTags();
+    public function getTags():array;
 }

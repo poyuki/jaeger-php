@@ -24,7 +24,7 @@ class ProbabilisticSamplerTest extends TestCase
 
     public function testProbabilisticSampler(){
         $sample = new ProbabilisticSampler(0.0001);
-        $this->assertTrue($sample->IsSampled() !== null);
+        $this->assertTrue($sample->isSampled() !== null);
     }
 
     public function testConstSamplerGetTag(){

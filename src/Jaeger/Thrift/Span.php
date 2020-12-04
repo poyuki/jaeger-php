@@ -18,13 +18,14 @@ namespace Jaeger\Thrift;
 use Thrift\Protocol\TProtocol;
 use Thrift\Type\TType;
 
-class Span implements TStruct{
+class Span implements TStruct
+{
 
-    public static $thriftSpan = null;
+    public static array $thriftSpan;
 
-    public static $tptl = null;
+    public static $tptl;
 
-    public static $instance = null;
+    public static Span $instance;
 
     private function __construct()
     {
@@ -36,29 +37,31 @@ class Span implements TStruct{
     }
 
 
-    public static function getInstance(){
-        if(! (self::$instance instanceof self) )
-        {
+    public static function getInstance(): Span
+    {
+        if (!(self::$instance instanceof self)) {
             self::$instance = new self();
         }
         return self::$instance;
     }
 
 
-    public function setThriftSpan($thriftSpan = []){
+    public function setThriftSpan(array $thriftSpan = []): void
+    {
         self::$thriftSpan = $thriftSpan;
     }
 
 
-    public function getThriftSpan(){
+    public function getThriftSpan(): array
+    {
         return self::$thriftSpan;
     }
 
 
-    public function write(TProtocol $t)
+    public function write(TProtocol $t): void
     {
         self::$tptl = $t;
-        if(isset(self::$thriftSpan['wrote']) && self::$thriftSpan['wrote']){
+        if (isset(self::$thriftSpan['wrote']) && self::$thriftSpan['wrote']) {
             $tran = self::$tptl->getTransport();
             $tran->write(self::$thriftSpan['wrote']);
         } else {
@@ -67,13 +70,13 @@ class Span implements TStruct{
     }
 
 
-    public function read(TProtocol $t)
+    public function read(TProtocol $t): void
     {
         // TODO: Implement read() method.
     }
 
 
-    private function handleSpan($span)
+    private function handleSpan($span): void
     {
         self::$tptl->writeStructBegin("Span");
 
@@ -126,7 +129,7 @@ class Span implements TStruct{
     }
 
 
-    private function handleSpanLogs($logs)
+    private function handleSpanLogs($logs): void
     {
         self::$tptl->writeFieldBegin('logs', TType::LST, 11);
         self::$tptl->writeListBegin(TType::STRUCT, count($logs));
@@ -140,7 +143,7 @@ class Span implements TStruct{
     }
 
 
-    private function handleLog($log)
+    private function handleLog($log): void
     {
         self::$tptl->writeStructBegin("Log");
 
@@ -155,7 +158,7 @@ class Span implements TStruct{
     }
 
 
-    private function handleLogFields($fields)
+    private function handleLogFields($fields): void
     {
         self::$tptl->writeFieldBegin('fields', TType::LST, 2);
         self::$tptl->writeListBegin(TType::STRUCT, count($fields));
@@ -169,7 +172,7 @@ class Span implements TStruct{
     }
 
 
-    private function handleSpanTags($tags)
+    private function handleSpanTags($tags): void
     {
         self::$tptl->writeFieldBegin('tags', TType::LST, 10);
         self::$tptl->writeListBegin(TType::STRUCT, count($tags));
@@ -183,7 +186,7 @@ class Span implements TStruct{
     }
 
 
-    private function handleSpanRefes($references)
+    private function handleSpanRefes($references): void
     {
         self::$tptl->writeFieldBegin('references', TType::LST, 6);
         self::$tptl->writeListBegin(TType::STRUCT, count($references));
@@ -197,7 +200,7 @@ class Span implements TStruct{
     }
 
 
-    private function handleSpanRefe($refe)
+    private function handleSpanRefe($refe): void
     {
         self::$tptl->writeStructBegin("SpanRef");
 

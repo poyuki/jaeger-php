@@ -20,27 +20,29 @@ use Jaeger\Constants;
 
 class ConstSampler implements Sampler{
 
-    private $decision = '';
+    private bool $decision;
 
-    private $tags = [];
+    private array $tags = [];
 
-    public function __construct($decision = true){
+    public function __construct(bool $decision = true){
         $this->decision = $decision;
         $this->tags[Constants\SAMPLER_TYPE_TAG_KEY] = 'const';
         $this->tags[Constants\SAMPLER_PARAM_TAG_KEY] = $decision;
     }
 
-    public function IsSampled(){
+    public function isSampled(): bool
+    {
         return $this->decision;
     }
 
 
-    public function Close(){
+    public function close():void{
         //nothing to do
     }
 
 
-    public function getTags(){
+    public function getTags(): array
+    {
         return $this->tags;
     }
 }

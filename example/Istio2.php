@@ -13,16 +13,20 @@
  * the License.
  */
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))).'/autoload.php';
+declare(strict_types=1);
 
+require_once dirname(__FILE__, 4) . '/autoload.php';
+
+use GuzzleHttp\Client;
 use Jaeger\Config;
 use OpenTracing\Formats;
+use const Jaeger\Constants\PROPAGATOR_ZIPKIN;
 
 $http = new swoole_http_server("0.0.0.0", 8001);
 $http->on('request', function ($request, $response) {
     unset($_SERVER['argv']);
     $config = Config::getInstance();
-    $config::$propagator = \Jaeger\Constants\PROPAGATOR_ZIPKIN;
+    $config::$propagator = PROPAGATOR_ZIPKIN;
 
     //init server span start
     $tracer = $config->initTracer('Istio', 'jaeger-agent.istio-system:6831');
@@ -37,7 +41,7 @@ $http->on('request', function ($request, $response) {
     $clientSpan = $clientTracer->startSpan('Istio2', ['child_of' => $spanContext]);
     $clientTracer->inject($clientSpan->spanContext, Formats\TEXT_MAP, $injectTarget);
 
-    $client = new \GuzzleHttp\Client();
+    $client = new Client();
     $clientSpan->setTag("http.url", "Istio3:8002");
     $res = $client->request('GET', 'Istio3:8002', ['headers' => $injectTarget]);
     $clientSpan->setTag("http.status_code", $res->getStatusCode());

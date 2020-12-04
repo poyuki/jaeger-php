@@ -13,16 +13,20 @@
  * the License.
  */
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))).'/autoload.php';
+declare(strict_types=1);
+
+require_once dirname(__FILE__, 4) . '/autoload.php';
 
 use Jaeger\Config;
 use OpenTracing\Formats;
+use const Jaeger\Constants\PROPAGATOR_ZIPKIN;
 
 $http = new swoole_http_server("0.0.0.0", 8002);
+
 $http->on('request', function ($request, $response) {
     unset($_SERVER['argv']);
     $config = Config::getInstance();
-    $config::$propagator = \Jaeger\Constants\PROPAGATOR_ZIPKIN;
+    $config::$propagator = PROPAGATOR_ZIPKIN;
 
     //init server span start
     $tracer = $config->initTracer('Istio', 'jaeger-agent.istio-system:6831');
@@ -38,10 +42,10 @@ $http->on('request', function ($request, $response) {
     $clientSpan = $clientTracer->startSpan('Istio3', ['child_of' => $spanContext]);
 
     $sum = 0;
-    for($i = 0; $i < 10; $i++){
+    for ($i = 0; $i < 10; $i++) {
         $sum += $i;
     }
-    $clientSpan->log(['message' => 'result:'.$sum]);
+    $clientSpan->log(['message' => 'result:' . $sum]);
     $clientSpan->finish();
 
     //client span1 end
@@ -53,4 +57,5 @@ $http->on('request', function ($request, $response) {
 
     $response->end("Hello Istio3");
 });
+
 $http->start();

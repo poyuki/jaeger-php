@@ -18,9 +18,10 @@ namespace Jaeger\Thrift;
 use Thrift\Protocol\TProtocol;
 use Thrift\Type\TType;
 
-class Process implements TStruct{
+class Process implements TStruct
+{
 
-    public static $tptl = null;
+    public static $tptl;
 
     public static $serverName = '';
 
@@ -30,16 +31,17 @@ class Process implements TStruct{
 
     public function __construct($processThrift)
     {
-        self::$serverName = isset($processThrift['serverName']) ? $processThrift['serverName'] : '';
-        self::$thriftTags = isset($processThrift['tags']) ? $processThrift['tags'] : '';
-        self::$wrote = isset($processThrift['wrote']) ? $processThrift['wrote'] : '';
+        self::$serverName = $processThrift['serverName'] ?? '';
+        self::$thriftTags = $processThrift['tags'] ?? '';
+        self::$wrote = $processThrift['wrote'] ?? '';
     }
 
 
-    public function write(TProtocol $t){
+    public function write(TProtocol $t):void
+    {
         self::$tptl = $t;
 
-        if(self::$wrote){
+        if (self::$wrote) {
             $tran = self::$tptl->getTransport();
             $tran->write(self::$wrote);
         } else {
@@ -48,7 +50,7 @@ class Process implements TStruct{
 
             $this->handleProcessSName();
             $this->handleProcessTags();
-            
+
             self::$tptl->writeFieldStop();
             self::$tptl->writeStructEnd();
         }
@@ -57,7 +59,7 @@ class Process implements TStruct{
     }
 
 
-    private function handleProcessSName()
+    private function handleProcessSName(): void
     {
         self::$tptl->writeFieldBegin("serverName", TType::STRING, 1);
 
@@ -67,9 +69,9 @@ class Process implements TStruct{
     }
 
 
-    private function handleProcessTags()
+    private function handleProcessTags(): void
     {
-        if(count(self::$thriftTags) > 0) {
+        if (count(self::$thriftTags) > 0) {
             self::$tptl->writeFieldBegin("tags", TType::LST, 2);
             self::$tptl->writeListBegin(TType::STRUCT, count(self::$thriftTags));
 
@@ -83,5 +85,7 @@ class Process implements TStruct{
     }
 
 
-    public function read(TProtocol $t){}
+    public function read(TProtocol $t):void
+    {
+    }
 }

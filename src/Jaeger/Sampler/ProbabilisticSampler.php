@@ -12,40 +12,46 @@
  * or implied. See the License for the specific language governing permissions and limitations under
  * the License.
  */
+
 namespace Jaeger\Sampler;
 
 use Jaeger\Constants;
 
-class ProbabilisticSampler implements Sampler{
+class ProbabilisticSampler implements Sampler
+{
 
     // min 0, max 1
-    private $rate = 0;
+    private float $rate;
 
-    private $tags = [];
+    private array $tags = [];
 
-    
-    public function __construct($rate = 0.0001){
+
+    public function __construct(float $rate = 0.0001)
+    {
         $this->rate = $rate;
         $this->tags[Constants\SAMPLER_TYPE_TAG_KEY] = 'probabilistic';
         $this->tags[Constants\SAMPLER_PARAM_TAG_KEY] = $rate;
     }
 
 
-    public function IsSampled(){
-        if(mt_rand(1, 1 / $this->rate) == 1){
-            return true;
-        }else{
-            return false;
-        }
+    /**
+     * @return bool
+     * @throws \Exception
+     */
+    public function isSampled(): bool
+    {
+        return random_int(1, 1 / $this->rate) === 1;
     }
 
 
-    public function Close(){
+    public function close(): void
+    {
         //nothing to do
     }
 
 
-    public function getTags(){
+    public function getTags(): array
+    {
         return $this->tags;
     }
 }

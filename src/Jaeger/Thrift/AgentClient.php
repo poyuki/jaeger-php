@@ -15,6 +15,7 @@
 
 namespace Jaeger\Thrift;
 
+use JetBrains\PhpStorm\ArrayShape;
 use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
 use Thrift\Type\TMessageType;
@@ -24,9 +25,9 @@ use Jaeger\Constants;
 class AgentClient
 {
 
-    public static $tptl = null;
+    public static $tptl;
 
-    public function buildThrift($batch)
+    #[ArrayShape(['len' => "mixed", 'thriftStr' => "mixed"])] public function buildThrift($batch): array
     {
         $tran = new TMemoryBuffer();
         self::$tptl = new TCompactProtocol($tran);
@@ -46,7 +47,7 @@ class AgentClient
     }
 
 
-    private function handleBatch($batch)
+    private function handleBatch($batch): void
     {
         self::$tptl->writeFieldBegin("batch", TType::STRUCT, 1);
 
@@ -61,13 +62,13 @@ class AgentClient
     }
 
 
-    private function handleThriftSpans($thriftSpans)
+    private function handleThriftSpans($thriftSpans): void
     {
         self::$tptl->writeFieldBegin("spans", TType::LST, 2);
         self::$tptl->writeListBegin(TType::STRUCT, count($thriftSpans));
 
         $agentSpan = Span::getInstance();
-        foreach ($thriftSpans as $thriftSpan){
+        foreach ($thriftSpans as $thriftSpan) {
             $agentSpan->setThriftSpan($thriftSpan);
             $agentSpan->write(self::$tptl);
         }
@@ -77,7 +78,7 @@ class AgentClient
     }
 
 
-    private function handleThriftProcess($thriftProcess)
+    private function handleThriftProcess($thriftProcess): void
     {
         self::$tptl->writeFieldBegin("process", TType::STRUCT, 1);
         (new Process($thriftProcess))->write(self::$tptl);

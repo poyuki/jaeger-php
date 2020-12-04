@@ -17,8 +17,8 @@ namespace Jaeger\Thrift;
 
 final class SpanRefType {
 
-    const CHILD_OF = 0;
+    public const CHILD_OF = 0;
 
-    const FOLLOWS_FROM = 1;
+    public const FOLLOWS_FROM = 1;
 
 }

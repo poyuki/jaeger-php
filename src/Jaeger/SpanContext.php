@@ -16,35 +16,39 @@
 namespace Jaeger;
 
 
-class SpanContext implements \OpenTracing\SpanContext{
+use JetBrains\PhpStorm\Pure;
+
+class SpanContext implements \OpenTracing\SpanContext
+{
     // traceID represents globally unique ID of the trace.
     // Usually generated as a random number.
-    public $traceIdLow;
+    public int $traceIdLow;
 
-    public $traceIdHigh;
+    public int $traceIdHigh;
 
 
     // spanID represents span ID that must be unique within its trace,
     // but does not have to be globally unique.
-    public $spanId;
+    public int $spanId;
 
     // parentID refers to the ID of the parent span.
     // Should be 0 if the current span is a root span.
-    public $parentId;
+    public int $parentId;
 
     // flags is a bitmap containing such bits as 'sampled' and 'debug'.
-    public $flags;
+    public int $flags;
 
     // Distributed Context baggage. The is a snapshot in time.
     // key => val
-    public $baggage;
+    public ?array $baggage;
 
     // debugID can be set to some correlation ID when the context is being
     // extracted from a TextMap carrier.
-    public $debugId;
+    public int $debugId;
 
 
-    public function __construct($spanId, $parentId, $flags, $baggage = null, $debugId = 0){
+    public function __construct(int $spanId, int $parentId, int $flags, array $baggage = null, int $debugId = 0)
+    {
         $this->spanId = $spanId;
         $this->parentId = $parentId;
         $this->flags = $flags;
@@ -53,13 +57,16 @@ class SpanContext implements \OpenTracing\SpanContext{
     }
 
 
-    public function getBaggageItem($key){
-        return isset($this->baggage[$key]) ? $this->baggage[$key] : null;
+    public function getBaggageItem($key)
+    {
+        return $this->baggage[$key] ?? null;
     }
 
 
-    public function withBaggageItem($key, $value){
+    public function withBaggageItem($key, $value): bool
+    {
         $this->baggage[$key] = $value;
+
         return true;
     }
 
@@ -69,27 +76,40 @@ class SpanContext implements \OpenTracing\SpanContext{
     }
 
 
-    public function buildString(){
-        if($this->traceIdHigh){
-            return sprintf("%x%016x:%x:%x:%x", $this->traceIdHigh, $this->traceIdLow,
-                $this->spanId, $this->parentId, $this->flags);
+    /**
+     * @return string
+     */
+    #[Pure] public function buildString(): string
+    {
+        if ($this->traceIdHigh) {
+            return sprintf(
+                "%x%016x:%x:%x:%x",
+                $this->traceIdHigh,
+                $this->traceIdLow,
+                $this->spanId,
+                $this->parentId,
+                $this->flags
+            );
         }
 
         return sprintf("%x:%x:%x:%x", $this->traceIdLow, $this->spanId, $this->parentId, $this->flags);
     }
 
 
-    public function spanIdToString(){
+    #[Pure] public function spanIdToString(): string
+    {
         return sprintf("%x", $this->spanId);
     }
 
 
-    public function parentIdToString(){
+    #[Pure] public function parentIdToString(): string
+    {
         return sprintf("%x", $this->parentId);
     }
 
 
-    public function traceIdLowToString(){
+    #[Pure] public function traceIdLowToString(): string
+    {
         if ($this->traceIdHigh) {
             return sprintf("%x%016x", $this->traceIdHigh, $this->traceIdLow);
         }
@@ -98,7 +118,8 @@ class SpanContext implements \OpenTracing\SpanContext{
     }
 
 
-    public function flagsToString(){
+    #[Pure] public function flagsToString(): string
+    {
         return sprintf("%x", $this->flags);
     }
 
@@ -107,15 +128,16 @@ class SpanContext implements \OpenTracing\SpanContext{
      * 是否取样
      * @return mixed
      */
-    public function isSampled(){
+    public function isSampled()
+    {
         return $this->flags;
     }
 
 
-    public function hexToSignedInt($hex)
+    public function hexToSignedInt($hex): int
     {
         //Avoid pure Arabic numerals eg:1
-        if (gettype($hex) != "string") {
+        if (!is_string($hex)) {
             $hex .= '';
         }
 
@@ -133,7 +155,7 @@ class SpanContext implements \OpenTracing\SpanContext{
     }
 
 
-    public function traceIdToString($traceId)
+    public function traceIdToString($traceId): void
     {
         $len = strlen($traceId);
         if ($len > 16) {
@@ -148,7 +170,7 @@ class SpanContext implements \OpenTracing\SpanContext{
     /**
      * @return bool
      */
-    public function isValid()
+    #[Pure] public function isValid(): bool
     {
         return $this->isTraceIdValid() && $this->spanId;
     }
@@ -157,7 +179,7 @@ class SpanContext implements \OpenTracing\SpanContext{
     /**
      * @return bool
      */
-    public function isTraceIdValid()
+    public function isTraceIdValid(): bool
     {
         return $this->traceIdLow || $this->traceIdHigh;
     }

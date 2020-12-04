@@ -15,14 +15,17 @@
 
 namespace Jaeger\Propagator;
 
+use ArrayAccess;
 use Jaeger\SpanContext;
 use Jaeger\Constants;
 
-class JaegerPropagator implements Propagator{
+class JaegerPropagator implements Propagator
+{
 
-    public function inject(SpanContext $spanContext, $format, &$carrier){
+    public function inject(SpanContext $spanContext, string $format, array &$carrier): void
+    {
         $carrier[strtoupper(Constants\Tracer_State_Header_Name)] = $spanContext->buildString();
-        if($spanContext->baggage) {
+        if ($spanContext->baggage) {
             foreach ($spanContext->baggage as $k => $v) {
                 $carrier[strtoupper(Constants\Trace_Baggage_Header_Prefix . $k)] = $v;
             }
@@ -30,44 +33,49 @@ class JaegerPropagator implements Propagator{
     }
 
 
-    public function extract($format, $carrier){
+    public function extract(string $format, array $carrier): ?SpanContext
+    {
         $spanContext = null;
-        
+
         $carrier = array_change_key_case($carrier, CASE_LOWER);
 
-        foreach ($carrier as $k => $v){
-            
-            if(!in_array($k, [Constants\Tracer_State_Header_Name,
-                Constants\Jaeger_Debug_Header, Constants\Jaeger_Baggage_Header]) &&
-                stripos($k, Constants\Trace_Baggage_Header_Prefix) === false){
+        foreach ($carrier as $k => $v) {
+
+            if (!in_array($k, [
+                    Constants\Tracer_State_Header_Name,
+                    Constants\Jaeger_Debug_Header,
+                    Constants\Jaeger_Baggage_Header
+                ], true)
+                && stripos($k, Constants\Trace_Baggage_Header_Prefix) === false) {
                 continue;
             }
 
-            if($spanContext === null){
+            if ($spanContext === null) {
                 $spanContext = new SpanContext(0, 0, 0, null, 0);
             }
-            
-            if(is_array($v)){
+
+            if ($v instanceof ArrayAccess) {
                 $v = urldecode(current($v));
-            }else {
+            } else {
                 $v = urldecode($v);
             }
-            if($k == Constants\Tracer_State_Header_Name){
-                list($traceId, $spanId, $parentId,$flags) = explode(':', $v);
+
+            if ($k === Constants\Tracer_State_Header_Name) {
+                [$traceId, $spanId, $parentId, $flags] = explode(':', $v);
 
                 $spanContext->spanId = $spanContext->hexToSignedInt($spanId);
                 $spanContext->parentId = $spanContext->hexToSignedInt($parentId);
                 $spanContext->flags = $flags;
                 $spanContext->traceIdToString($traceId);
 
-            }elseif(stripos($k, Constants\Trace_Baggage_Header_Prefix) !== false){
+            } elseif (stripos($k, Constants\Trace_Baggage_Header_Prefix) !== false) {
                 $safeKey = str_replace(Constants\Trace_Baggage_Header_Prefix, "", $k);
-                if($safeKey != "") {
+                if ($safeKey !== "") {
                     $spanContext->withBaggageItem($safeKey, $v);
                 }
-            }elseif($k == Constants\Jaeger_Debug_Header){
+            } elseif ($k === Constants\Jaeger_Debug_Header) {
                 $spanContext->debugId = $v;
-            }elseif($k == Constants\Jaeger_Baggage_Header){
+            } elseif ($k === Constants\Jaeger_Baggage_Header) {
                 // Converts a comma separated key value pair list into a map
                 // e.g. key1=value1, key2=value2, key3 = value3
                 // is converted to array { "key1" : "value1",
@@ -75,9 +83,9 @@ class JaegerPropagator implements Propagator{
                 //                                     "key3" : "value3" }
                 $parseVal = explode(',', $v);
                 foreach ($parseVal as $val) {
-                    if(stripos($v, '=') !== false) {
+                    if (str_contains($v, '=')) {
                         $kv = explode('=', trim($val));
-                        if (count($kv) == 2) {
+                        if (count($kv) === 2) {
                             $spanContext->withBaggageItem($kv[0], $kv[1]);
                         }
                     }
@@ -85,7 +93,6 @@ class JaegerPropagator implements Propagator{
 
             }
         }
-
 
         return $spanContext;
     }

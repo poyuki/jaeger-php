@@ -18,29 +18,33 @@ namespace Jaeger\Thrift;
 use Thrift\Protocol\TProtocol;
 use Thrift\Type\TType;
 
-class Tags implements TStruct{
+class Tags implements TStruct
+{
 
-    public static $tptl = null;
+    public static TProtocol $tptl;
 
-    public static $instance = null;
+    public static Tags $instance;
 
-    public $tags = null;
+    public $tags;
 
-    public $thriftTags = null;
-
-
-    private function __construct(){
-
-    }
+    public $thriftTags;
 
 
-    private function __clone(){
+    private function __construct()
+    {
 
     }
 
 
-    public static function getInstance(){
-        if(!(self::$instance instanceof self)){
+    private function __clone()
+    {
+
+    }
+
+
+    public static function getInstance(): Tags
+    {
+        if (!(self::$instance instanceof self)) {
             self::$instance = new self();
         }
 
@@ -48,15 +52,12 @@ class Tags implements TStruct{
     }
 
 
-    public function write(TProtocol $t){
+    public function write(TProtocol $t): void
+    {
 
         self::$tptl = $t;
 
-        if(empty($this->thriftTags)){
-            return false;
-        }
-
-        foreach($this->thriftTags as $tag) {
+        foreach ($this->thriftTags as $tag) {
 
             self::$tptl->writeStructBegin("Tag");
 
@@ -105,36 +106,37 @@ class Tags implements TStruct{
             self::$tptl->writeFieldStop();
             self::$tptl->writeStructEnd();
         }
-
-
-        return true;
     }
 
 
-    public function read(TProtocol $t){
+    public function read(TProtocol $t): void
+    {
 
     }
 
 
-    public function setThriftTags($thriftTags){
+    public function setThriftTags($thriftTags): void
+    {
         $this->thriftTags = $thriftTags;
     }
 
 
-    public function setTags($tags){
+    public function setTags($tags): void
+    {
         $this->tags = $tags;
     }
 
 
-    public function buildTags(){
+    public function buildTags(): array
+    {
 
         $thriftTags = [];
-        if(empty($this->tags)){
+        if (empty($this->tags)) {
             return $thriftTags;
         }
 
-        foreach ($this->tags as $k => $v){
-            switch(gettype($v)){
+        foreach ($this->tags as $k => $v) {
+            switch (gettype($v)) {
                 case "string":
                     $thriftTags[] = [
                         'key' => $k,
@@ -167,7 +169,7 @@ class Tags implements TStruct{
                     $thriftTags[] = [
                         'key' => $k,
                         'vType' => 'STRING',
-                        'vStr' => json_encode($v, JSON_UNESCAPED_UNICODE),
+                        'vStr' => json_encode($v, JSON_THROW_ON_ERROR | JSON_UNESCAPED_UNICODE),
                     ];
                     break;
                 default:

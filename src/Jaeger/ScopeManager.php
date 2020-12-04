@@ -1,11 +1,18 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jaeger;
 
+use JetBrains\PhpStorm\Pure;
 
-class ScopeManager implements \OpenTracing\ScopeManager{
+class ScopeManager implements \OpenTracing\ScopeManager
+{
 
-    private $scopes = [];
+    /**
+     * @var array|Scope[]
+     */
+    private array $scopes = [];
 
 
     /**
@@ -14,19 +21,21 @@ class ScopeManager implements \OpenTracing\ScopeManager{
      * @param bool $finishSpanOnClose
      * @return Scope
      */
-    public function activate(\OpenTracing\Span $span, $finishSpanOnClose){
+    public function activate(\OpenTracing\Span $span, $finishSpanOnClose): Scope
+    {
         $scope = new Scope($this, $span, $finishSpanOnClose);
         $this->scopes[] = $scope;
+
         return $scope;
     }
 
 
     /**
-     * get last scope
-     * @return mixed|null
+     * @return Scope|null
      */
-    public function getActive(){
-        if (empty($this->scopes)) {
+    #[Pure] public function getActive(): ?Scope
+    {
+        if (count($this->scopes) === 0) {
             return null;
         }
 
@@ -36,18 +45,18 @@ class ScopeManager implements \OpenTracing\ScopeManager{
 
     /**
      * del scope
+     *
      * @param Scope $scope
      * @return bool
      */
-    public function delActive(Scope $scope){
-        $scopeLength = count($this->scopes);
-
-        if($scopeLength <= 0){
+    public function delActive(Scope $scope): bool
+    {
+        if (count($this->scopes) === 0) {
             return false;
         }
 
-        for ($i = 0; $i < $scopeLength; $i++) {
-            if ($scope === $this->scopes[$i]) {
+        foreach ($this->scopes as $i => $iValue) {
+            if ($scope === $iValue) {
                 array_splice($this->scopes, $i, 1);
             }
         }

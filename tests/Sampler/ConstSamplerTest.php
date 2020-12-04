@@ -24,7 +24,7 @@ class ConstSamplerTest extends TestCase
 
     public function testConstSampler(){
         $sample = new ConstSampler(true);
-        $this->assertTrue($sample->IsSampled()  == true);
+        $this->assertTrue($sample->isSampled()  == true);
     }
 
     public function testConstSamplerGetTag(){

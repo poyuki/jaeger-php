@@ -22,19 +22,20 @@ use Jaeger\Thrift\AgentClient;
  * Class UdpClient
  * @package Jaeger
  */
+class UdpClient
+{
 
-class UdpClient{
+    private string $host;
 
-    private $host = '';
+    private string $post;
 
-    private $post = '';
+    private $socket;
 
-    private $socket = '';
+    private AgentClient $agentClient;
 
-    private $agentClient = null;
-
-    public function __construct($hostPost, AgentClient $agentClient){
-        list($this->host, $this->post) = explode(":", $hostPost);
+    public function __construct(string $hostPost, AgentClient $agentClient)
+    {
+        [$this->host, $this->post] = explode(":", $hostPost);
         $this->agentClient = $agentClient;
         $this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     }
@@ -43,7 +44,8 @@ class UdpClient{
     /**
      * @return bool
      */
-    public function isOpen(){
+    public function isOpen(): bool
+    {
         return $this->socket !== null;
     }
 
@@ -51,26 +53,28 @@ class UdpClient{
     /**
      * send thrift
      * @param $batch
-     * @return bool
+     * @return bool|null
      */
-    public function emitBatch($batch){
+    public function emitBatch($batch): ?bool
+    {
         $buildThrift = $this->agentClient->buildThrift($batch);
-        if(isset($buildThrift['len']) && $buildThrift['len'] && $this->isOpen()) {
+        if (isset($buildThrift['len']) && $buildThrift['len'] && $this->isOpen()) {
             $len = $buildThrift['len'];
             $enitThrift = $buildThrift['thriftStr'];
             $res = socket_sendto($this->socket, $enitThrift, $len, 0, $this->host, $this->post);
-            if($res === false) {
-                throw new \Exception("emit failse");
+            if ($res === false) {
+                throw new \RuntimeException("emit fails");
             }
 
             return true;
-        }else{
-            return false;
         }
+
+        return false;
     }
 
 
-    public function close(){
+    public function close(): void
+    {
         socket_close($this->socket);
         $this->socket = null;
     }

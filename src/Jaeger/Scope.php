@@ -3,7 +3,6 @@
 namespace Jaeger;
 
 
-
 class Scope implements \OpenTracing\Scope{
 
     /**

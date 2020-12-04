@@ -13,7 +13,9 @@
  * the License.
  */
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))).'/autoload.php';
+declare(strict_types=1);
+
+require_once dirname(dirname(dirname(dirname(__FILE__)))) . '/autoload.php';
 
 use Jaeger\Config;
 use GuzzleHttp\Client;
@@ -50,13 +52,13 @@ $clientTracer->inject($clientSpan1->spanContext, Formats\TEXT_MAP, $injectTarget
 $method = 'GET';
 $url = 'https://github.com/';
 $client = new Client();
-$res = $client->request($method, $url,['headers' => $injectTarget1]);
+$res = $client->request($method, $url, ['headers' => $injectTarget1]);
 
 $clientSpan1->setTag('http.status_code', 200);
 $clientSpan1->setTag('http.method', 'GET');
 $clientSpan1->setTag('http.url', $url);
 
-$clientSpan1->log(['message' => "HTTP1 ". $method .' '. $url .' end !']);
+$clientSpan1->log(['message' => "HTTP1 " . $method . ' ' . $url . ' end !']);
 $clientSpan1->finish();
 //client span1 end
 
@@ -80,7 +82,7 @@ $clientSpan2->setTag('http.status_code', 200);
 $clientSpan2->setTag('http.method', 'GET');
 $clientSpan2->setTag('http.url', $url);
 
-$clientSpan2->log(['message' => "HTTP2 ". $method .' '. $url .' end !']);
+$clientSpan2->log(['message' => "HTTP2 " . $method . ' ' . $url . ' end !']);
 $clientSpan2->finish();
 //client span2 end
 
@@ -89,4 +91,4 @@ $serverSpan->finish();
 //trace flush
 $config->flush();
 
-echo "success\r\n";
+echo "success" . PHP_EOL;

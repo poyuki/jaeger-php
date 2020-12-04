@@ -17,9 +17,10 @@ namespace Jaeger\Reporter;
 
 use Jaeger\Jaeger;
 
-interface Reporter{
+interface Reporter
+{
 
-    public function report(Jaeger $jaeger);
+    public function report(Jaeger $jaeger): void;
 
-    public function close();
+    public function close(): void;
 }

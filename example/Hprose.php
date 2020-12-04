@@ -13,7 +13,9 @@
  * the License.
  */
 
-require_once dirname(dirname(dirname(dirname(__FILE__)))).'/autoload.php';
+declare(strict_types=1);
+
+require_once dirname(__FILE__, 4) . '/autoload.php';
 
 use Hprose\Client;
 use Jaeger\Config;
@@ -44,15 +46,15 @@ $clientTracer->inject($clientSpan->spanContext, Formats\TEXT_MAP, $header);
 $url = 'http://0.0.0.0:8080/main';
 $client = Client::create($url, false);
 
-if($header){
-    foreach($header as $key => $val){
+if ($header) {
+    foreach ($header as $key => $val) {
         $client->setHeader($key, $val);
     }
 }
 $clientSpan->setTag('http.url', $url);
-$clientSpan->setTag('http.method' , 'POST');
+$clientSpan->setTag('http.method', 'POST');
 
-$result =  $client->get("Hprose");
+$result = $client->get("Hprose");
 
 $clientSpan->log(['http.result' => $result]);
 $clientSpan->finish();
@@ -64,6 +66,6 @@ $serverSpan->finish();
 //trace flush
 $config->flush();
 
-echo "success\r\n";
+echo "success" . PHP_EOL;
 
 

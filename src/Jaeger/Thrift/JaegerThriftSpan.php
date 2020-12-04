@@ -17,12 +17,15 @@ namespace Jaeger\Thrift;
 
 use Jaeger\Jaeger;
 use Jaeger\Span;
+use JetBrains\PhpStorm\ArrayShape;
 use OpenTracing\Reference;
 
-class JaegerThriftSpan{
+class JaegerThriftSpan
+{
 
 
-    public function buildJaegerProcessThrift(Jaeger $jaeger){
+    #[ArrayShape(['serverName' => "mixed|string", 'tags' => "array"])] public function buildJaegerProcessThrift(Jaeger $jaeger): array
+    {
         $tags = [];
         $ip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '0.0.0.0';
         $tags['peer.ipv4'] = $ip;
@@ -44,41 +47,40 @@ class JaegerThriftSpan{
         return $processThrift;
     }
 
-    public function buildJaegerSpanThrift(Span $span){
+    public function buildJaegerSpanThrift(Span $span): array
+    {
 
         $spContext = $span->spanContext;
-        $thriftSpan = [
+        return [
             'traceIdLow' => $spContext->traceIdLow,
             'traceIdHigh' => $spContext->traceIdHigh,
             'spanId' => $spContext->spanId,
             'parentSpanId' => $spContext->parentId,
             'operationName' => $span->getOperationName(),
-            'flags' => intval($spContext->flags),
+            'flags' => (int)$spContext->flags,
             'startTime' => $span->startTime,
             'duration' => $span->duration,
             'tags' => $this->buildTags($span->tags),
             'logs' => $this->buildLogs($span->logs),
             'references' => $this->buildReferences($span->references)
         ];
-
-        return $thriftSpan;
     }
 
 
-
-    private function buildTags($tags){
+    private function buildTags($tags): array
+    {
         $tagsObj = Tags::getInstance();
         $tagsObj->setTags($tags);
-        $resultTags = $tagsObj->buildTags();
 
-        return $resultTags;
+        return $tagsObj->buildTags();
     }
 
 
-    private function buildLogs($logs){
+    private function buildLogs($logs): array
+    {
         $resultLogs = [];
         $tagsObj = Tags::getInstance();
-        foreach($logs as $log){
+        foreach ($logs as $log) {
             $tagsObj->setTags($log['fields']);
             $fields = $tagsObj->buildTags();
             $resultLogs[] = [
@@ -91,12 +93,13 @@ class JaegerThriftSpan{
     }
 
 
-    private function buildReferences($references){
+    private function buildReferences($references): array
+    {
         $spanRef = [];
-        foreach ($references as $ref){
-            if($ref->isType(Reference::CHILD_OF)){
+        foreach ($references as $ref) {
+            if ($ref->isType(Reference::CHILD_OF)) {
                 $type = SpanRefType::CHILD_OF;
-            }else if($ref->isType(Reference::FOLLOWS_FROM)){
+            } else if ($ref->isType(Reference::FOLLOWS_FROM)) {
                 $type = SpanRefType::FOLLOWS_FROM;
             }
             $ctx = $ref->getContext();
