@@ -19,8 +19,6 @@ use Jaeger\SpanContext;
 
 interface Propagator
 {
-
-
     /**
      * @param SpanContext $spanContext
      * @param string $format
@@ -28,12 +26,10 @@ interface Propagator
      */
     public function inject(SpanContext $spanContext, string $format, array &$carrier): void;
 
-
     /**
      * @param string $format
      * @param array $carrier
      * @return SpanContext|null
      */
     public function extract(string $format, array $carrier): ?SpanContext;
-
 }

@@ -23,21 +23,24 @@ use PHPUnit\Framework\TestCase;
 class SpanTest extends TestCase
 {
 
-    public function testOverwriteOperationName(){
+    public function testOverwriteOperationName()
+    {
         $span = new Span('test', new NoopSpanContext(), []);
         $span->overwriteOperationName('test2');
         $this->assertTrue($span->getOperationName() == 'test2');
     }
 
 
-    public function testAddTags(){
+    public function testAddTags()
+    {
         $span = new Span('test', new NoopSpanContext(), []);
         $span->setTag('test', 'test');
         $this->assertTrue((isset($span->tags['test']) && $span->tags['test'] == 'test'));
     }
 
 
-    public function testFinish(){
+    public function testFinish()
+    {
         $span = new Span('test', new NoopSpanContext(), []);
         $span->setTag('test', 'test');
         $span->finish();
@@ -45,15 +48,16 @@ class SpanTest extends TestCase
     }
 
 
-    public function testGetContext(){
+    public function testGetContext()
+    {
         $span = new Span('test', new NoopSpanContext(), []);
         $spanContext = $span->getContext();
         $this->assertInstanceOf(NoopSpanContext::class, $spanContext);
     }
 
 
-
-    public function testLog(){
+    public function testLog()
+    {
         $span = new Span('test', new NoopSpanContext(), []);
         $logs = [
             'msg' => 'is test',
@@ -64,11 +68,12 @@ class SpanTest extends TestCase
     }
 
 
-    public function testGetBaggageItem(){
+    public function testGetBaggageItem()
+    {
         $span = new Span('test', new SpanContext(0, 0, 0), []);
         $span->addBaggageItem('version', '2.0.0');
 
-        $version =  $span->getBaggageItem('version');
+        $version = $span->getBaggageItem('version');
         $this->assertEquals('2.0.0', $version);
 
         $service = $span->getBaggageItem('service');

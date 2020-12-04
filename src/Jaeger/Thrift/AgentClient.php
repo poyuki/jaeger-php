@@ -27,7 +27,8 @@ class AgentClient
 
     public static $tptl;
 
-    #[ArrayShape(['len' => "mixed", 'thriftStr' => "mixed"])] public function buildThrift($batch): array
+    #[ArrayShape(['len' => "mixed", 'thriftStr' => "mixed"])]
+    public function buildThrift($batch): array
     {
         $tran = new TMemoryBuffer();
         self::$tptl = new TCompactProtocol($tran);

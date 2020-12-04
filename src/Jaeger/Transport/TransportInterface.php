@@ -17,7 +17,7 @@ namespace Jaeger\Transport;
 
 use Jaeger\Jaeger;
 
-interface Transport
+interface TransportInterface
 {
     public function append(Jaeger $jaeger): void;
 

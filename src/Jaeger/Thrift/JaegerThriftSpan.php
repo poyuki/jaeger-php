@@ -24,13 +24,14 @@ class JaegerThriftSpan
 {
 
 
-    #[ArrayShape(['serverName' => "mixed|string", 'tags' => "array"])] public function buildJaegerProcessThrift(Jaeger $jaeger): array
+    #[ArrayShape(['serverName' => "mixed|string", 'tags' => "array"])]
+    public function buildJaegerProcessThrift(Jaeger $jaeger): array
     {
         $tags = [];
-        $ip = isset($_SERVER['SERVER_ADDR']) ? $_SERVER['SERVER_ADDR'] : '0.0.0.0';
+        $ip = $_SERVER['SERVER_ADDR'] ?? '0.0.0.0';
         $tags['peer.ipv4'] = $ip;
 
-        $port = isset($_SERVER['SERVER_PORT']) ? $_SERVER['SERVER_PORT'] : '80';
+        $port = $_SERVER['SERVER_PORT'] ?? '80';
         $tags['peer.port'] = $port;
 
         $tags = array_merge($tags, $jaeger->tags);
@@ -38,19 +39,16 @@ class JaegerThriftSpan
         $tagsObj->setTags($tags);
         $thriftTags = $tagsObj->buildTags();
 
-        $processThrift = [
+        return [
             'serverName' => $jaeger->serverName,
             'tags' => $thriftTags,
         ];
-
-
-        return $processThrift;
     }
 
     public function buildJaegerSpanThrift(Span $span): array
     {
-
         $spContext = $span->spanContext;
+
         return [
             'traceIdLow' => $spContext->traceIdLow,
             'traceIdHigh' => $spContext->traceIdHigh,

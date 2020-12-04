@@ -101,7 +101,7 @@ class Span implements TStruct
         self::$tptl->writeFieldEnd();
 
         if (isset($span['references'])) {
-            $this->handleSpanRefes($span['references']);
+            $this->handleSpanReferences($span['references']);
         }
 
         self::$tptl->writeFieldBegin('flags', TType::I32, 7);
@@ -186,13 +186,13 @@ class Span implements TStruct
     }
 
 
-    private function handleSpanRefes($references): void
+    private function handleSpanReferences(array$references): void
     {
         self::$tptl->writeFieldBegin('references', TType::LST, 6);
         self::$tptl->writeListBegin(TType::STRUCT, count($references));
 
-        foreach ($references as $refe) {
-            $this->handleSpanRefe($refe);
+        foreach ($references as $reference) {
+            $this->handleSpanReference($reference);
         }
 
         self::$tptl->writeListEnd();
@@ -200,24 +200,24 @@ class Span implements TStruct
     }
 
 
-    private function handleSpanRefe($refe): void
+    private function handleSpanReference(array $reference): void
     {
         self::$tptl->writeStructBegin("SpanRef");
 
         self::$tptl->writeFieldBegin("refType", TType::I32, 1);
-        self::$tptl->writeI32($refe['refType']);
+        self::$tptl->writeI32($reference['refType']);
         self::$tptl->writeFieldEnd();
 
         self::$tptl->writeFieldBegin("traceIdLow", TType::I64, 2);
-        self::$tptl->writeI64($refe['traceIdLow']);
+        self::$tptl->writeI64($reference['traceIdLow']);
         self::$tptl->writeFieldEnd();
 
         self::$tptl->writeFieldBegin("traceIdHigh", TType::I64, 3);
-        self::$tptl->writeI64($refe['traceIdHigh']);
+        self::$tptl->writeI64($reference['traceIdHigh']);
         self::$tptl->writeFieldEnd();
 
         self::$tptl->writeFieldBegin("spanId", TType::I64, 4);
-        self::$tptl->writeI64($refe['spanId']);
+        self::$tptl->writeI64($reference['spanId']);
         self::$tptl->writeFieldEnd();
 
         self::$tptl->writeFieldStop();

@@ -26,7 +26,7 @@ use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
 use Jaeger\Constants;
 
-class TransportUdp implements Transport
+class TransportUdp implements TransportInterface
 {
 
     private TMemoryBuffer $tran;
@@ -76,7 +76,6 @@ class TransportUdp implements Transport
      */
     public function append(Jaeger $jaeger): void
     {
-
         if ($jaeger->process === null) {
             $this->buildAndCalcSizeOfProcessThrift($jaeger);
         }
@@ -84,7 +83,6 @@ class TransportUdp implements Transport
         $thriftSpansBuffer = [];  // Uncommitted span used to temporarily store shards
 
         foreach ($jaeger->spans as $span) {
-
             $spanThrift = (new JaegerThriftSpan())->buildJaegerSpanThrift($span);
 
             $agentSpan = Span::getInstance();
@@ -128,39 +126,33 @@ class TransportUdp implements Transport
 
     /**
      * @param TStruct $ts
-     * @param $serializedThrift
-     * @return mixed
+     * @param array $serializedThrift
+     * @return int
      */
-    private function getAndCalcSizeOfSerializedThrift(TStruct $ts, &$serializedThrift)
+    private function getAndCalcSizeOfSerializedThrift(TStruct $ts, array &$serializedThrift): int
     {
 
         $ts->write($this->thriftProtocol);
-        $serThriftStrlen = $this->tran->available();
+        $serThriftStrLength = $this->tran->available();
         //获取后buf清空
         $serializedThrift['wrote'] = $this->tran->read(Constants\UDP_PACKET_MAX_LENGTH);
 
-        return $serThriftStrlen;
+        return $serThriftStrLength;
     }
 
 
     public function flush(): void
     {
-        $batchNum = count(self::$batches);
-        if ($batchNum > 0) {
-
-
-            $spanNum = 0;
+        if (count(self::$batches) > 0) {
             $udp = new UdpClient(self::$hostPort, new AgentClient());
 
             foreach (self::$batches as $batch) {
-                $spanNum += count($batch['thriftSpans']);
                 $udp->emitBatch($batch);
             }
 
             $udp->close();
             $this->resetBuffer();
         }
-
     }
 
 

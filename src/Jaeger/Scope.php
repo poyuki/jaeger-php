@@ -13,12 +13,12 @@ class Scope implements \OpenTracing\Scope{
     /**
      * @var span
      */
-    private $span = null;
+    private span $span;
 
     /**
      * @var bool
      */
-    private $finishSpanOnClose;
+    private bool $finishSpanOnClose;
 
 
     /**

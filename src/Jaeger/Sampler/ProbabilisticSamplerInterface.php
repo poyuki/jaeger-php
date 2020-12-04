@@ -15,9 +15,12 @@
 
 namespace Jaeger\Sampler;
 
+use Exception;
 use Jaeger\Constants;
+use const Jaeger\Constants\SAMPLER_PARAM_TAG_KEY;
+use const Jaeger\Constants\SAMPLER_TYPE_TAG_KEY;
 
-class ProbabilisticSampler implements Sampler
+class ProbabilisticSamplerInterface implements SamplerInterface
 {
 
     // min 0, max 1
@@ -29,14 +32,14 @@ class ProbabilisticSampler implements Sampler
     public function __construct(float $rate = 0.0001)
     {
         $this->rate = $rate;
-        $this->tags[Constants\SAMPLER_TYPE_TAG_KEY] = 'probabilistic';
-        $this->tags[Constants\SAMPLER_PARAM_TAG_KEY] = $rate;
+        $this->tags[SAMPLER_TYPE_TAG_KEY] = 'probabilistic';
+        $this->tags[SAMPLER_PARAM_TAG_KEY] = $rate;
     }
 
 
     /**
      * @return bool
-     * @throws \Exception
+     * @throws Exception
      */
     public function isSampled(): bool
     {

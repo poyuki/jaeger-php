@@ -16,24 +16,24 @@
 namespace Jaeger\Reporter;
 
 use Jaeger\Jaeger;
-use Jaeger\Transport\Transport;
+use Jaeger\Transport\TransportInterface;
 
-class RemoteReporter implements Reporter{
+class RemoteReporter implements ReporterInterface
+{
 
-    public Transport $tran;
+    public TransportInterface $tran;
 
-    public function __construct(Transport $tran)
+    public function __construct(TransportInterface $tran)
     {
         $this->tran = $tran;
     }
 
-    public function report(Jaeger $jaeger):void
+    public function report(Jaeger $jaeger): void
     {
         $this->tran->append($jaeger);
     }
 
-
-    public function close():void
+    public function close(): void
     {
         $this->tran->flush();
     }

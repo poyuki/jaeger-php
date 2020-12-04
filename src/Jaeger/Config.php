@@ -19,10 +19,11 @@ namespace Jaeger;
 
 use Exception;
 use Jaeger\Reporter\RemoteReporter;
-use Jaeger\Reporter\Reporter;
+use Jaeger\Reporter\ReporterInterface;
+use Jaeger\Transport\TransportInterface;
 use Jaeger\Transport\TransportUdp;
 use OpenTracing\NoopTracer;
-use Jaeger\Sampler\Sampler;
+use Jaeger\Sampler\SamplerInterface;
 use Jaeger\Sampler\ConstSampler;
 use Jaeger\Propagator\JaegerPropagator;
 use Jaeger\Propagator\ZipkinPropagator;
@@ -31,17 +32,17 @@ use const Jaeger\Constants\PROPAGATOR_ZIPKIN;
 
 class Config
 {
-    private $transport;
+    private TransportInterface $transport;
 
-    private $reporter;
+    private ReporterInterface $reporter;
 
-    private $sampler;
+    private SamplerInterface $sampler;
 
-    private $scopeManager;
+    private \OpenTracing\ScopeManager $scopeManager;
 
     private bool $gen128bit = false;
 
-    public static $tracer;
+    public static array $tracers;
 
     public static $span;
 
@@ -78,19 +79,19 @@ class Config
      * @return Jaeger|null
      * @throws Exception
      */
-    public function initTracer($serverName, $agentHostPort = ''): ?Jaeger
+    public function initTracer(string $serverName,string  $agentHostPort = ''): ?Jaeger
     {
 
         if (self::$disabled) {
             return NoopTracer::create();
         }
 
-        if ($serverName == '') {
-            throw new Exception("serverName require");
+        if ($serverName === '') {
+            throw new \RuntimeException("serverName require");
         }
 
-        if (isset(self::$tracer[$serverName]) && !empty(self::$tracer[$serverName])) {
-            return self::$tracer[$serverName];
+        if (isset(self::$tracers[$serverName]) && !empty(self::$tracers[$serverName])) {
+            return self::$tracers[$serverName];
         }
 
 
@@ -123,7 +124,7 @@ class Config
         }
 
 
-        self::$tracer[$serverName] = $tracer;
+        self::$tracers[$serverName] = $tracer;
 
 
         return $tracer;
@@ -131,6 +132,7 @@ class Config
 
     /**
      * close tracer
+     *
      * @param $disabled
      * @return Config
      */
@@ -141,7 +143,7 @@ class Config
         return $this;
     }
 
-    public function setTransport(Transport\Transport $transport): Config
+    public function setTransport(TransportInterface $transport): Config
     {
         $this->transport = $transport;
 
@@ -149,7 +151,7 @@ class Config
     }
 
 
-    public function setReporter(Reporter $reporter): Config
+    public function setReporter(ReporterInterface $reporter): Config
     {
         $this->reporter = $reporter;
 
@@ -157,7 +159,7 @@ class Config
     }
 
 
-    public function setSampler(Sampler $sampler): Config
+    public function setSampler(SamplerInterface $sampler): Config
     {
         $this->sampler = $sampler;
 
@@ -175,8 +177,8 @@ class Config
 
     public function flush(): bool
     {
-        if (count(self::$tracer) > 0) {
-            foreach (self::$tracer as $tracer) {
+        if (count(self::$tracers) > 0) {
+            foreach (self::$tracers as $tracer) {
                 $tracer->reportSpan();
             }
             $this->reporter->close();

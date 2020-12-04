@@ -17,17 +17,20 @@ namespace Jaeger\Propagator;
 
 use ArrayAccess;
 use Jaeger\SpanContext;
-use Jaeger\Constants;
+use const Jaeger\Constants\Jaeger_Baggage_Header;
+use const Jaeger\Constants\Jaeger_Debug_Header;
+use const Jaeger\Constants\Trace_Baggage_Header_Prefix;
+use const Jaeger\Constants\Tracer_State_Header_Name;
 
 class JaegerPropagator implements Propagator
 {
 
     public function inject(SpanContext $spanContext, string $format, array &$carrier): void
     {
-        $carrier[strtoupper(Constants\Tracer_State_Header_Name)] = $spanContext->buildString();
+        $carrier[strtoupper(Tracer_State_Header_Name)] = $spanContext->buildString();
         if ($spanContext->baggage) {
             foreach ($spanContext->baggage as $k => $v) {
-                $carrier[strtoupper(Constants\Trace_Baggage_Header_Prefix . $k)] = $v;
+                $carrier[strtoupper(Trace_Baggage_Header_Prefix . $k)] = $v;
             }
         }
     }
@@ -41,12 +44,8 @@ class JaegerPropagator implements Propagator
 
         foreach ($carrier as $k => $v) {
 
-            if (!in_array($k, [
-                    Constants\Tracer_State_Header_Name,
-                    Constants\Jaeger_Debug_Header,
-                    Constants\Jaeger_Baggage_Header
-                ], true)
-                && stripos($k, Constants\Trace_Baggage_Header_Prefix) === false) {
+            if (!(in_array($k, [Tracer_State_Header_Name, Jaeger_Debug_Header, Jaeger_Baggage_Header], true)
+                && str_contains($k, Trace_Baggage_Header_Prefix))) {
                 continue;
             }
 
@@ -60,7 +59,7 @@ class JaegerPropagator implements Propagator
                 $v = urldecode($v);
             }
 
-            if ($k === Constants\Tracer_State_Header_Name) {
+            if ($k === Tracer_State_Header_Name) {
                 [$traceId, $spanId, $parentId, $flags] = explode(':', $v);
 
                 $spanContext->spanId = $spanContext->hexToSignedInt($spanId);
@@ -68,14 +67,14 @@ class JaegerPropagator implements Propagator
                 $spanContext->flags = $flags;
                 $spanContext->traceIdToString($traceId);
 
-            } elseif (stripos($k, Constants\Trace_Baggage_Header_Prefix) !== false) {
-                $safeKey = str_replace(Constants\Trace_Baggage_Header_Prefix, "", $k);
+            } elseif (str_contains($k, Trace_Baggage_Header_Prefix)) {
+                $safeKey = str_replace(Trace_Baggage_Header_Prefix, "", $k);
                 if ($safeKey !== "") {
                     $spanContext->withBaggageItem($safeKey, $v);
                 }
-            } elseif ($k === Constants\Jaeger_Debug_Header) {
+            } elseif ($k === Jaeger_Debug_Header) {
                 $spanContext->debugId = $v;
-            } elseif ($k === Constants\Jaeger_Baggage_Header) {
+            } elseif ($k === Jaeger_Baggage_Header) {
                 // Converts a comma separated key value pair list into a map
                 // e.g. key1=value1, key2=value2, key3 = value3
                 // is converted to array { "key1" : "value1",

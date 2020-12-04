@@ -15,47 +15,41 @@
 
 namespace Jaeger\Thrift;
 
-class Types {
+use JetBrains\PhpStorm\Pure;
 
+class Types
+{
     public const TAG_TYPE_STRING = 0;
     public const TAG_TYPE_DOUBLE = 1;
-	public const TAG_TYPE_BOOL = 2;
-	public const TAG_TYPE_LONG = 3;
-	public const TAG_TYPE_BINARY = 4;
+    public const TAG_TYPE_BOOL = 2;
+    public const TAG_TYPE_LONG = 3;
+    public const TAG_TYPE_BINARY = 4;
 
+    public const TAG_TYPE_STRINGS = [
+        self::TAG_TYPE_STRING => "STRING",
+        self::TAG_TYPE_DOUBLE => "DOUBLE",
+        self::TAG_TYPE_BOOL => "BOOL",
+        self::TAG_TYPE_LONG => "LONG",
+        self::TAG_TYPE_BINARY => "BINARY",
+    ];
 
+    #[Pure]
     public static function stringToTagType($string): int|string
     {
-        switch($string){
-            case "STRING":
-                return self::TAG_TYPE_STRING;
-            case "DOUBLE":
-                return self::TAG_TYPE_DOUBLE;
-            case "BOOL":
-                return self::TAG_TYPE_BOOL;
-            case "LONG":
-                return self::TAG_TYPE_LONG;
-            case "BINARY":
-                return self::TAG_TYPE_BINARY;
+        $flippedTags = array_flip(self::TAG_TYPE_STRINGS);
+        if (array_key_exists($string, $flippedTags)) {
+            return $flippedTags[$string];
         }
 
         return "not a valid TagType string";
     }
 
 
+    #[Pure]
     public static function tagTypeToString($tagType): string
     {
-        switch($tagType){
-            case self::TAG_TYPE_STRING:
-                return "STRING";
-            case self::TAG_TYPE_DOUBLE:
-                return "DOUBLE";
-            case self::TAG_TYPE_BOOL:
-                return "BOOL";
-            case self::TAG_TYPE_LONG:
-                return "LONG";
-            case self::TAG_TYPE_BINARY:
-                return "BINARY";
+        if (array_key_exists($tagType, self::TAG_TYPE_STRINGS)) {
+            return self::TAG_TYPE_STRINGS[$tagType];
         }
 
         return "UNSET";

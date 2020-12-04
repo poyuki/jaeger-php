@@ -21,13 +21,11 @@ use JetBrains\PhpStorm\Pure;
 class Span implements \OpenTracing\Span
 {
 
-    private string $operationName = '';
+    private string $operationName;
 
-    public $startTime = '';
+    public int $startTime;
 
-    public string $finishTime = '';
-
-    public string $spanKind = '';
+    public int $finishTime;
 
     public ?\OpenTracing\SpanContext $spanContext = null;
 
@@ -39,7 +37,7 @@ class Span implements \OpenTracing\Span
 
     public array $references = [];
 
-    #[Pure] public function __construct($operationName, \OpenTracing\SpanContext $spanContext, $references, $startTime = null)
+    public function __construct(string $operationName, \OpenTracing\SpanContext $spanContext, $references, int $startTime = null)
     {
         $this->operationName = $operationName;
         $this->startTime = $startTime ?? $this->microtimeToInt();

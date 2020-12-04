@@ -13,14 +13,14 @@
  * the License.
  */
 
-namespace Jaeger\Reporter;
+namespace Jaeger\Sampler;
 
-use Jaeger\Jaeger;
 
-interface Reporter
+interface SamplerInterface
 {
-
-    public function report(Jaeger $jaeger): void;
+    public function isSampled(): bool;
 
     public function close(): void;
+
+    public function getTags(): array;
 }

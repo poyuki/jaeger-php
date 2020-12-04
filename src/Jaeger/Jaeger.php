@@ -18,12 +18,12 @@ declare(strict_types=1);
 namespace Jaeger;
 
 use Exception;
-use Jaeger\Sampler\Sampler;
+use Jaeger\Sampler\SamplerInterface;
 use OpenTracing\Exceptions\UnsupportedFormat;
 use OpenTracing\SpanContext;
 use OpenTracing\Formats;
 use OpenTracing\Tracer;
-use Jaeger\Reporter\Reporter;
+use Jaeger\Reporter\ReporterInterface;
 use OpenTracing\StartSpanOptions;
 use OpenTracing\Reference;
 use Jaeger\Propagator\Propagator;
@@ -54,8 +54,8 @@ class Jaeger implements Tracer
 
     public function __construct(
         $serverName = '',
-        Reporter $reporter,
-        Sampler $sampler,
+        ReporterInterface $reporter,
+        SamplerInterface $sampler,
         ScopeManager $scopeManager
     ) {
 
