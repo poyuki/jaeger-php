@@ -29,7 +29,7 @@ class Process implements TStruct
 
     public static $wrote = '';
 
-    public function __construct($processThrift)
+    public function __construct(array $processThrift)
     {
         self::$serverName = $processThrift['serverName'] ?? '';
         self::$thriftTags = $processThrift['tags'] ?? '';

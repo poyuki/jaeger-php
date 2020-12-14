@@ -15,9 +15,6 @@
 
 namespace Jaeger;
 
-
-use JetBrains\PhpStorm\Pure;
-
 class SpanContext implements \OpenTracing\SpanContext
 {
     // traceID represents globally unique ID of the trace.
@@ -79,7 +76,7 @@ class SpanContext implements \OpenTracing\SpanContext
     /**
      * @return string
      */
-    #[Pure] public function buildString(): string
+    public function buildString(): string
     {
         if ($this->traceIdHigh) {
             return sprintf(
@@ -96,19 +93,25 @@ class SpanContext implements \OpenTracing\SpanContext
     }
 
 
-    #[Pure] public function spanIdToString(): string
+    /**
+     * @return string
+     */
+    public function spanIdToString(): string
     {
         return sprintf("%x", $this->spanId);
     }
 
 
-    #[Pure] public function parentIdToString(): string
+    /**
+     * @return string
+     */
+    public function parentIdToString(): string
     {
         return sprintf("%x", $this->parentId);
     }
 
 
-    #[Pure] public function traceIdLowToString(): string
+    public function traceIdLowToString(): string
     {
         if ($this->traceIdHigh) {
             return sprintf("%x%016x", $this->traceIdHigh, $this->traceIdLow);
@@ -118,7 +121,10 @@ class SpanContext implements \OpenTracing\SpanContext
     }
 
 
-    #[Pure] public function flagsToString(): string
+    /**
+     * @return string
+     */
+    public function flagsToString(): string
     {
         return sprintf("%x", $this->flags);
     }
@@ -134,13 +140,12 @@ class SpanContext implements \OpenTracing\SpanContext
     }
 
 
-    public function hexToSignedInt($hex): int
+    /**
+     * @param string $hex
+     * @return int
+     */
+    public function hexToSignedInt(string $hex): int
     {
-        //Avoid pure Arabic numerals eg:1
-        if (!is_string($hex)) {
-            $hex .= '';
-        }
-
         $hexStrLen = strlen($hex);
         $dec = 0;
         for ($i = 0; $i < $hexStrLen; $i++) {
@@ -155,7 +160,10 @@ class SpanContext implements \OpenTracing\SpanContext
     }
 
 
-    public function traceIdToString($traceId): void
+    /**
+     * @param string $traceId
+     */
+    public function traceIdToString(string $traceId): void
     {
         $len = strlen($traceId);
         if ($len > 16) {
@@ -170,7 +178,7 @@ class SpanContext implements \OpenTracing\SpanContext
     /**
      * @return bool
      */
-    #[Pure] public function isValid(): bool
+    public function isValid(): bool
     {
         return $this->isTraceIdValid() && $this->spanId;
     }

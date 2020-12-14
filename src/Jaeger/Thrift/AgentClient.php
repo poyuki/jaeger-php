@@ -28,7 +28,7 @@ class AgentClient
     public static $tptl;
 
     #[ArrayShape(['len' => "mixed", 'thriftStr' => "mixed"])]
-    public function buildThrift($batch): array
+    public function buildThrift(array $batch): array
     {
         $tran = new TMemoryBuffer();
         self::$tptl = new TCompactProtocol($tran);
@@ -48,7 +48,7 @@ class AgentClient
     }
 
 
-    private function handleBatch($batch): void
+    private function handleBatch(array $batch): void
     {
         self::$tptl->writeFieldBegin("batch", TType::STRUCT, 1);
 
@@ -79,7 +79,7 @@ class AgentClient
     }
 
 
-    private function handleThriftProcess($thriftProcess): void
+    private function handleThriftProcess(array $thriftProcess): void
     {
         self::$tptl->writeFieldBegin("process", TType::STRUCT, 1);
         (new Process($thriftProcess))->write(self::$tptl);

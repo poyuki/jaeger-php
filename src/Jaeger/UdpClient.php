@@ -55,7 +55,7 @@ class UdpClient
      * @param $batch
      * @return bool|null
      */
-    public function emitBatch($batch): ?bool
+    public function emitBatch(array $batch): ?bool
     {
         $buildThrift = $this->agentClient->buildThrift($batch);
         if (isset($buildThrift['len']) && $buildThrift['len'] && $this->isOpen()) {

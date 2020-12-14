@@ -15,9 +15,6 @@
 
 namespace Jaeger;
 
-
-use JetBrains\PhpStorm\Pure;
-
 class Span implements \OpenTracing\Span
 {
 
@@ -65,9 +62,8 @@ class Span implements \OpenTracing\Span
     /**
      * @param float|int|\DateTimeInterface|null $finishTime if passing float or int
      * it should represent the timestamp (including as many decimal places as you need)
-     * @param array $logRecords
      */
-    public function finish($finishTime = null, array $logRecords = []): void
+    public function finish($finishTime = null): void
     {
         $this->finishTime = $finishTime ?? $this->microtimeToInt();
         $this->duration = $this->finishTime - $this->startTime;
@@ -82,7 +78,7 @@ class Span implements \OpenTracing\Span
     }
 
 
-    public function setTag($key, $value)
+    public function setTag($key, $value): void
     {
         $this->tags[$key] = $value;
     }
@@ -95,11 +91,12 @@ class Span implements \OpenTracing\Span
      * @param int|float|\DateTimeInterface $timestamp
      * @throws SpanAlreadyFinished if the span is already finished
      */
-    public function log(array $fields = [], $timestamp = null)
+    public function log(array $fields = [], $timestamp = null): void
     {
-        $log['timestamp'] = $timestamp ?: $this->microtimeToInt();
-        $log['fields'] = $fields;
-        $this->logs[] = $log;
+        $this->logs[] = [
+            'timestamp' => $timestamp ?: $this->microtimeToInt(),
+            'fields' => $fields,
+        ];
     }
 
     /**
@@ -132,7 +129,7 @@ class Span implements \OpenTracing\Span
     }
 
 
-    #[Pure] private function microtimeToInt(): int
+    private function microtimeToInt(): int
     {
         return (int)(microtime(true) * 1000000);
     }
