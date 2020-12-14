@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -34,7 +37,7 @@ class Span implements \OpenTracing\Span
 
     public array $references = [];
 
-    public function __construct(string $operationName, \OpenTracing\SpanContext $spanContext, $references, int $startTime = null)
+    public function __construct(string $operationName, \OpenTracing\SpanContext $spanContext, $references, ?int $startTime = null)
     {
         $this->operationName = $operationName;
         $this->startTime = $startTime ?? $this->microtimeToInt();

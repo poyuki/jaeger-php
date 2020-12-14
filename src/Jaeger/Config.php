@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -18,15 +19,15 @@ declare(strict_types=1);
 namespace Jaeger;
 
 use Exception;
+use Jaeger\Propagator\JaegerPropagator;
+use Jaeger\Propagator\ZipkinPropagator;
 use Jaeger\Reporter\RemoteReporter;
 use Jaeger\Reporter\ReporterInterface;
+use Jaeger\Sampler\ConstSampler;
+use Jaeger\Sampler\SamplerInterface;
 use Jaeger\Transport\TransportInterface;
 use Jaeger\Transport\TransportUdp;
 use OpenTracing\NoopTracer;
-use Jaeger\Sampler\SamplerInterface;
-use Jaeger\Sampler\ConstSampler;
-use Jaeger\Propagator\JaegerPropagator;
-use Jaeger\Propagator\ZipkinPropagator;
 use const Jaeger\Constants\PROPAGATOR_JAEGER;
 use const Jaeger\Constants\PROPAGATOR_ZIPKIN;
 
@@ -54,12 +55,10 @@ class Config
 
     private function __construct()
     {
-
     }
 
     private function __clone()
     {
-
     }
 
     public static function getInstance(): Config
@@ -79,7 +78,7 @@ class Config
      * @return Jaeger|null
      * @throws Exception
      */
-    public function initTracer(string $serverName,string  $agentHostPort = ''): ?Jaeger
+    public function initTracer(string $serverName, string $agentHostPort = ''): ?Jaeger
     {
 
         if (self::$disabled) {

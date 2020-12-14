@@ -1,4 +1,5 @@
 <?php
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -18,68 +19,58 @@ declare(strict_types=1);
 namespace Jaeger;
 
 use Exception;
+use Jaeger\Propagator\Propagator;
+use Jaeger\Reporter\ReporterInterface;
 use Jaeger\Sampler\SamplerInterface;
 use OpenTracing\Exceptions\UnsupportedFormat;
-use OpenTracing\SpanContext;
 use OpenTracing\Formats;
-use OpenTracing\Tracer;
-use Jaeger\Reporter\ReporterInterface;
-use OpenTracing\StartSpanOptions;
 use OpenTracing\Reference;
-use Jaeger\Propagator\Propagator;
+use OpenTracing\SpanContext;
+use OpenTracing\StartSpanOptions;
+use OpenTracing\Tracer;
 
 class Jaeger implements Tracer
 {
 
-    private $reporter;
+    private ReporterInterface $reporter;
 
-    private $sampler;
+    private SamplerInterface $sampler;
 
-    private $gen128bit = false;
+    private ScopeManager $scopeManager;
 
-    private $scopeManager;
+    private bool $gen128bit = false;
 
-    public $spans = [];
+    public array $spans = [];
 
-    public $tags = [];
+    public array $tags = [];
 
     public $process;
 
-    public $serverName = '';
+    public string $serverName = '';
 
-    public $processThrift = '';
+    public string $processThrift = '';
 
-    /** @var Propagator|null */
-    public $propagator;
+    public Propagator $propagator;
 
     public function __construct(
-        $serverName = '',
+        ?string $serverName,
         ReporterInterface $reporter,
         SamplerInterface $sampler,
         ScopeManager $scopeManager
     ) {
-
         $this->reporter = $reporter;
-
         $this->sampler = $sampler;
-
         $this->scopeManager = $scopeManager;
-
+        $this->serverName = $serverName??($_SERVER['SERVER_NAME']??'unknown server');
         $this->setTags($this->sampler->getTags());
         $this->setTags($this->getEnvTags());
-
-        if ($serverName === '') {
-            $this->serverName = isset($_SERVER['SERVER_NAME']) ? $_SERVER['SERVER_NAME'] : 'unknow server';
-        } else {
-            $this->serverName = $serverName;
-        }
     }
 
 
     /**
      * @param array $tags key => value
      */
-    public function setTags(array $tags = [])
+    public function setTags(array $tags = []): void
     {
         if (!empty($tags)) {
             $this->tags = array_merge($this->tags, $tags);
@@ -89,6 +80,7 @@ class Jaeger implements Tracer
 
     /**
      * init span info
+     *
      * @param string $operationName
      * @param array $options
      * @return Span
@@ -111,8 +103,13 @@ class Jaeger implements Tracer
                 $spanContext->traceIdHigh = $this->generateId();
             }
         } else {
-            $spanContext = new \Jaeger\SpanContext($this->generateId(),
-                $parentSpan->spanId, $parentSpan->flags, $parentSpan->baggage, 0);
+            $spanContext = new \Jaeger\SpanContext(
+                $this->generateId(),
+                $parentSpan->spanId,
+                $parentSpan->flags,
+                $parentSpan->baggage,
+                0
+            );
             $spanContext->traceIdLow = $parentSpan->traceIdLow;
             if ($parentSpan->traceIdHigh) {
                 $spanContext->traceIdHigh = $parentSpan->traceIdHigh;
@@ -157,6 +154,7 @@ class Jaeger implements Tracer
 
     /**
      * 提取
+     *
      * @param string $format
      * @param $carrier
      */
@@ -233,7 +231,8 @@ class Jaeger implements Tracer
         }
 
         if ($parentSpan) {
-            if (($parentSpan->isValid()
+            if (
+                ($parentSpan->isValid()
                 || (!$parentSpan->isTraceIdValid() && $parentSpan->debugId)
                 || count($parentSpan->baggage) > 0)
             ) {
@@ -251,7 +250,7 @@ class Jaeger implements Tracer
         if (isset($_SERVER['JAEGER_TAGS']) && $_SERVER['JAEGER_TAGS'] != '') {
             $envTags = explode(',', $_SERVER['JAEGER_TAGS']);
             foreach ($envTags as $envK => $envTag) {
-                list($key, $value) = explode('=', $envTag);
+                [$key, $value] = explode('=', $envTag);
                 $tags[$key] = $value;
             }
         }

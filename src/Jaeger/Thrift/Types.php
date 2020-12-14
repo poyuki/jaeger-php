@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -34,7 +37,7 @@ class Types
     ];
 
     #[Pure]
-    public static function stringToTagType($string): int|string
+    public static function stringToTagType($string): int | string
     {
         $flippedTags = array_flip(self::TAG_TYPE_STRINGS);
         if (array_key_exists($string, $flippedTags)) {

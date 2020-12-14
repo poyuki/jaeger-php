@@ -17,6 +17,7 @@ class ScopeManager implements \OpenTracing\ScopeManager
 
     /**
      * append scope
+     *
      * @param \OpenTracing\Span $span
      * @param bool $finishSpanOnClose
      * @return Scope

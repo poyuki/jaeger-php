@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -32,13 +35,11 @@ class Tags implements TStruct
 
     private function __construct()
     {
-
     }
 
 
     private function __clone()
     {
-
     }
 
 
@@ -58,7 +59,6 @@ class Tags implements TStruct
         self::$tptl = $t;
 
         foreach ($this->thriftTags as $tag) {
-
             self::$tptl->writeStructBegin("Tag");
 
             if (isset($tag['key'])) {
@@ -111,7 +111,6 @@ class Tags implements TStruct
 
     public function read(TProtocol $t): void
     {
-
     }
 
 
@@ -161,7 +160,7 @@ class Tags implements TStruct
                     'vType' => 'STRING',
                     'vStr' => is_string($v),
                 ],
-            };
+                };
         }
 
         return $thriftTags;

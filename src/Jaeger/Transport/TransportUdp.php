@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -15,6 +18,7 @@
 
 namespace Jaeger\Transport;
 
+use Jaeger\Constants;
 use Jaeger\Jaeger;
 use Jaeger\Thrift\AgentClient;
 use Jaeger\Thrift\JaegerThriftSpan;
@@ -22,9 +26,8 @@ use Jaeger\Thrift\Process;
 use Jaeger\Thrift\Span;
 use Jaeger\Thrift\TStruct;
 use Jaeger\UdpClient;
-use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
-use Jaeger\Constants;
+use Thrift\Transport\TMemoryBuffer;
 
 class TransportUdp implements TransportInterface
 {

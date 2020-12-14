@@ -1,9 +1,11 @@
 <?php
 
+declare(strict_types=1);
+
 namespace Jaeger;
 
-
-class Scope implements \OpenTracing\Scope{
+class Scope implements \OpenTracing\Scope
+{
 
     /**
      * @var ScopeManager
@@ -23,11 +25,13 @@ class Scope implements \OpenTracing\Scope{
 
     /**
      * Scope constructor.
+     *
      * @param ScopeManager $scopeManager
      * @param \OpenTracing\Span $span
      * @param bool $finishSpanOnClose
      */
-    public function __construct(ScopeManager $scopeManager, \OpenTracing\Span $span, bool $finishSpanOnClose){
+    public function __construct(ScopeManager $scopeManager, \OpenTracing\Span $span, bool $finishSpanOnClose)
+    {
         $this->scopeManager = $scopeManager;
         $this->span = $span;
         $this->finishSpanOnClose = $finishSpanOnClose;

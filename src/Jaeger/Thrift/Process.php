@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -37,7 +40,7 @@ class Process implements TStruct
     }
 
 
-    public function write(TProtocol $t):void
+    public function write(TProtocol $t): void
     {
         self::$tptl = $t;
 
@@ -45,7 +48,6 @@ class Process implements TStruct
             $tran = self::$tptl->getTransport();
             $tran->write(self::$wrote);
         } else {
-
             self::$tptl->writeStructBegin("Process");
 
             $this->handleProcessSName();
@@ -54,8 +56,6 @@ class Process implements TStruct
             self::$tptl->writeFieldStop();
             self::$tptl->writeStructEnd();
         }
-
-
     }
 
 
@@ -85,7 +85,7 @@ class Process implements TStruct
     }
 
 
-    public function read(TProtocol $t):void
+    public function read(TProtocol $t): void
     {
     }
 }

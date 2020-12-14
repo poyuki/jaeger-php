@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -20,6 +23,7 @@ use Jaeger\Thrift\AgentClient;
 /**
  * send thrift to jaeger-agent
  * Class UdpClient
+ *
  * @package Jaeger
  */
 class UdpClient
@@ -52,6 +56,7 @@ class UdpClient
 
     /**
      * send thrift
+     *
      * @param $batch
      * @return bool|null
      */

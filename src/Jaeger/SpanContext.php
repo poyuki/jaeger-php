@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -44,14 +47,8 @@ class SpanContext implements \OpenTracing\SpanContext
     public int $debugId;
 
 
-    public function __construct(int $spanId, int $parentId, int $flags, array $baggage = null, int $debugId = 0)
-    {
-        $this->spanId = $spanId;
-        $this->parentId = $parentId;
-        $this->flags = $flags;
-        $this->baggage = $baggage;
-        $this->debugId = $debugId;
-    }
+    public function __construct(int $spanId, int $parentId, int $flags, ?array $baggage = null, int $debugId = 0)
+    {}
 
 
     public function getBaggageItem($key)
@@ -132,6 +129,7 @@ class SpanContext implements \OpenTracing\SpanContext
 
     /**
      * 是否取样
+     *
      * @return mixed
      */
     public function isSampled()

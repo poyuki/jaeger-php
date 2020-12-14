@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -43,9 +46,10 @@ class JaegerPropagator implements Propagator
         $carrier = array_change_key_case($carrier, CASE_LOWER);
 
         foreach ($carrier as $k => $v) {
-
-            if (!(in_array($k, [Tracer_State_Header_Name, Jaeger_Debug_Header, Jaeger_Baggage_Header], true)
-                && str_contains($k, Trace_Baggage_Header_Prefix))) {
+            if (
+                !(in_array($k, [Tracer_State_Header_Name, Jaeger_Debug_Header, Jaeger_Baggage_Header], true)
+                && str_contains($k, Trace_Baggage_Header_Prefix))
+            ) {
                 continue;
             }
 
@@ -66,7 +70,6 @@ class JaegerPropagator implements Propagator
                 $spanContext->parentId = $spanContext->hexToSignedInt($parentId);
                 $spanContext->flags = $flags;
                 $spanContext->traceIdToString($traceId);
-
             } elseif (str_contains($k, Trace_Baggage_Header_Prefix)) {
                 $safeKey = str_replace(Trace_Baggage_Header_Prefix, "", $k);
                 if ($safeKey !== "") {
@@ -89,11 +92,9 @@ class JaegerPropagator implements Propagator
                         }
                     }
                 }
-
             }
         }
 
         return $spanContext;
     }
-
 }

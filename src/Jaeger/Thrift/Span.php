@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -186,7 +189,7 @@ class Span implements TStruct
     }
 
 
-    private function handleSpanReferences(array$references): void
+    private function handleSpanReferences(array $references): void
     {
         self::$tptl->writeFieldBegin('references', TType::LST, 6);
         self::$tptl->writeListBegin(TType::STRUCT, count($references));

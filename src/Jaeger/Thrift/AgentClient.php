@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -15,12 +18,12 @@
 
 namespace Jaeger\Thrift;
 
+use Jaeger\Constants;
 use JetBrains\PhpStorm\ArrayShape;
-use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
+use Thrift\Transport\TMemoryBuffer;
 use Thrift\Type\TMessageType;
 use Thrift\Type\TType;
-use Jaeger\Constants;
 
 class AgentClient
 {
@@ -85,6 +88,4 @@ class AgentClient
         (new Process($thriftProcess))->write(self::$tptl);
         self::$tptl->writeFieldEnd();
     }
-
-
 }

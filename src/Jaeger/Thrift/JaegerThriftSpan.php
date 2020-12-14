@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -97,7 +100,7 @@ class JaegerThriftSpan
         foreach ($references as $ref) {
             if ($ref->isType(Reference::CHILD_OF)) {
                 $type = SpanRefType::CHILD_OF;
-            } else if ($ref->isType(Reference::FOLLOWS_FROM)) {
+            } elseif ($ref->isType(Reference::FOLLOWS_FROM)) {
                 $type = SpanRefType::FOLLOWS_FROM;
             }
             $ctx = $ref->getContext();

@@ -1,4 +1,7 @@
 <?php
+
+declare(strict_types=1);
+
 /*
  * Copyright (c) 2019, The Jaeger Authors
  *
@@ -15,8 +18,8 @@
 
 namespace Jaeger\Propagator;
 
-use Jaeger\SpanContext;
 use Jaeger\Constants;
+use Jaeger\SpanContext;
 use const Jaeger\Constants\X_B3_PARENT_SPANID;
 use const Jaeger\Constants\X_B3_SAMPLED;
 use const Jaeger\Constants\X_B3_SPANID;
