@@ -25,6 +25,8 @@ use Jaeger\UdpClient;
 use Thrift\Transport\TMemoryBuffer;
 use Thrift\Protocol\TCompactProtocol;
 use Jaeger\Constants;
+use const Jaeger\Constants\EMIT_BATCH_OVER_HEAD;
+use const Jaeger\Constants\UDP_PACKET_MAX_LENGTH;
 
 class TransportUdp implements Transport
 {
@@ -34,32 +36,28 @@ class TransportUdp implements Transport
     public static $hostPort = '';
 
     // sizeof(Span) * numSpans + processByteSize + emitBatchOverhead <= maxPacketSize
-    public static $maxSpanBytes = 0;
+    public static int $maxSpanBytes = 0;
 
     public static $batchs = [];
 
-    public $agentServerHostPort = '0.0.0.0:5775';
 
-    public $thriftProtocol = null;
+    public $thriftProtocol;
 
-    public $procesSize = 0;
+    public int $processSize = 0;
 
-    public $bufferSize = 0;
+    public int $bufferSize = 0;
 
     const MAC_UDP_MAX_SIZE = 9216;
 
-    public function __construct($hostport = '', $maxPacketSize = '')
+    public function __construct(string $hostPort = '0.0.0.0:5775', int $maxPacketSize = 0)
     {
-        if ($hostport == "") {
-            $hostport = $this->agentServerHostPort;
-        }
-        self::$hostPort = $hostport;
+        self::$hostPort = $hostPort;
 
-        if ($maxPacketSize == 0) {
-            $maxPacketSize = stristr(PHP_OS, 'DAR') ? self::MAC_UDP_MAX_SIZE : Constants\UDP_PACKET_MAX_LENGTH;
+        if ($maxPacketSize === 0) {
+            $maxPacketSize = str_contains(PHP_OS, 'DAR') ? self::MAC_UDP_MAX_SIZE : UDP_PACKET_MAX_LENGTH;
         }
 
-        self::$maxSpanBytes = $maxPacketSize - Constants\EMIT_BATCH_OVER_HEAD;
+        self::$maxSpanBytes = $maxPacketSize - EMIT_BATCH_OVER_HEAD;
 
         $this->tran = new TMemoryBuffer();
         $this->thriftProtocol = new TCompactProtocol($this->tran);
@@ -70,8 +68,8 @@ class TransportUdp implements Transport
     {
         $jaeger->processThrift = (new JaegerThriftSpan())->buildJaegerProcessThrift($jaeger);
         $jaeger->process = (new Process($jaeger->processThrift));
-        $this->procesSize = $this->getAndCalcSizeOfSerializedThrift($jaeger->process, $jaeger->processThrift);
-        $this->bufferSize += $this->procesSize;
+        $this->processSize = $this->getAndCalcSizeOfSerializedThrift($jaeger->process, $jaeger->processThrift);
+        $this->bufferSize += $this->processSize;
     }
 
 
@@ -129,7 +127,7 @@ class TransportUdp implements Transport
 
     public function resetBuffer()
     {
-        $this->bufferSize = $this->procesSize;
+        $this->bufferSize = $this->processSize;
         self::$batchs = [];
     }
 

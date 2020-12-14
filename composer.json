@@ -1,13 +1,27 @@
 {
-  "name":              "jukylin/jaeger-php",
-  "description":       "php client for jaeger",
-  "keywords":          ["jaeger","trace","opentracing"],
-  "license":           "Apache-2.0",
+  "name": "poyuki/jaeger-php",
+  "description": "php client for jaeger",
+  "keywords": [
+    "jaeger",
+    "trace",
+    "opentracing"
+  ],
+  "license": "Apache-2.0",
   "minimum-stability": "stable",
-  "require":           {
+  "require": {
     "php": ">=5.6.0",
-    "packaged/thrift" : "0.10.0",
-    "opentracing/opentracing" : "1.0.0-beta5"
+    "ext-ctype": "*",
+    "ext-sockets": "*",
+    "ext-json": "*",
+    "packaged/thrift": "0.10.0",
+    "opentracing/opentracing": "dev-master"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "^5",
+    "php-coveralls/php-coveralls": "^1.0",
+    "phpstan/phpstan": "^0.12.56",
+    "roave/security-advisories": "dev-master",
+    "slevomat/coding-standard": "^6.1"
   },
   "authors": [
     {
@@ -15,7 +29,7 @@
       "email": "742161455@qq.com"
     }
   ],
-  "autoload":          {
+  "autoload": {
     "psr-4": {
       "Jaeger\\": "src\\Jaeger"
     },
@@ -24,10 +38,23 @@
     ]
   },
   "scripts": {
-    "test": "./vendor/bin/phpunit"
+    "test": "./vendor/bin/phpunit",
+    "app/validate": [
+      "@composer validate --no-check-all",
+      "@composer check-platform-reqs --no-ansi --no-interaction"
+    ],
+    "app/ci": [
+      "@composer clearcache",
+      "@composer i --no-ansi --no-interaction --no-progress --optimize-autoloader --classmap-authoritative"
+    ],
+    "app/code-analysis": "php vendor/bin/phpstan analyse --no-ansi --no-interaction --no-progress -l 5 src",
+    "app/code-analysis-dev": "php vendor/bin/phpstan analyse -l 7 src",
+    "app/code-style": "php vendor/bin/phpcs --standard=phpcs.xml --extensions=php",
+    "app/code-style-fix": "php vendor/bin/phpcbf -p --standard=phpcs.xml --extensions=php",
+    "app/tests": "php vendor/bin/codecept run unit"
   },
-  "require-dev": {
-    "phpunit/phpunit": "^5",
-    "php-coveralls/php-coveralls": "^1.0"
+  "scripts-descriptions": {
+    "app/code-style": "Checks that the application code conforms to coding standard",
+    "app/code-style-fix": "Checks that the application code conforms to coding standard and automatically fix"
   }
 }
