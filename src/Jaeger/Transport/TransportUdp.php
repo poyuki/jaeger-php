@@ -47,7 +47,7 @@ class TransportUdp implements Transport
 
     public int $bufferSize = 0;
 
-    const MAC_UDP_MAX_SIZE = 9216;
+    public const MAC_UDP_MAX_SIZE = 9216;
 
     public function __construct(string $hostPort = '0.0.0.0:5775', int $maxPacketSize = 0)
     {
