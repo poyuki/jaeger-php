@@ -30,6 +30,7 @@ use Jaeger\Span as SpanClass;
 use OpenTracing\SpanContext;
 use OpenTracing\StartSpanOptions;
 use OpenTracing\Tracer;
+use OpenTracing\Scope;
 
 class Jaeger implements Tracer
 {
@@ -89,7 +90,7 @@ class Jaeger implements Tracer
             $low = $this->generateId();
             $spanId = $low;
             $flags = $this->sampler->isSampled();
-            $spanContext = new \Jaeger\SpanContext($spanId, 0, $flags, null, 0);
+            $spanContext = new \Jaeger\SpanContext($spanId, 0, (int)$flags, null, 0);
             $spanContext->traceIdLow = $low;
             if ($this->gen128bit === true) {
                 $spanContext->traceIdHigh = $this->generateId();
@@ -264,11 +265,11 @@ class Jaeger implements Tracer
 
 
     /**
-     * @return string
+     * @return int
      * @throws Exception
      */
-    private function generateId(): string
+    private function generateId(): int
     {
-        return microtime(true) * 10000 . random_int(10000, 99999);
+        return (int) (microtime(true) * 10000 . random_int(10000, 99999));
     }
 }
