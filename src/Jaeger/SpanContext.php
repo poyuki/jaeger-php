@@ -22,9 +22,9 @@ class SpanContext implements \OpenTracing\SpanContext
 {
     // traceID represents globally unique ID of the trace.
     // Usually generated as a random number.
-    public int $traceIdLow;
+    public int $traceIdLow = 0;
 
-    public int $traceIdHigh;
+    public int $traceIdHigh = 0;
 
 
     public function __construct(public int $spanId, public int $parentId, public int $flags, public ?array $baggage = null, public int $debugId = 0)
