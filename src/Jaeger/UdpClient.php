@@ -40,7 +40,9 @@ class UdpClient
 
     public function __construct(string $hostPost, AgentClient $agentClient)
     {
-        [$this->host, $this->port] = explode(":", $hostPost);
+        [$host, $port] = explode(":", $hostPost);
+        $this->host = $host;
+        $this->port = (int)$port;
         $this->agentClient = $agentClient;
         $this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     }

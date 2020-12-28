@@ -27,9 +27,13 @@ class SpanContext implements \OpenTracing\SpanContext
     public int $traceIdHigh = 0;
 
 
-    public function __construct(public int $spanId, public int $parentId, public int $flags, public ?array $baggage = null, public int $debugId = 0)
-    {
-    }
+    public function __construct(
+        public int $spanId,
+        public int $parentId,
+        public int $flags,
+        public ?array $baggage = null,
+        public int $debugId = 0
+    ) { }
 
 
     public function getBaggageItem($key): ?string
