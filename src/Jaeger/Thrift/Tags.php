@@ -45,7 +45,7 @@ class Tags implements TStruct
 
     public static function getInstance(): Tags
     {
-        if (!(self::$instance instanceof self)) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 

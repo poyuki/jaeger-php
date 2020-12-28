@@ -42,7 +42,7 @@ class Span implements TStruct
 
     public static function getInstance(): Span
     {
-        if (!(self::$instance instanceof self)) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
         return self::$instance;
