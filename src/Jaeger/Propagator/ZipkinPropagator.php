@@ -18,7 +18,6 @@ declare(strict_types=1);
 
 namespace Jaeger\Propagator;
 
-use Jaeger\Constants;
 use OpenTracing\SpanContext;
 use Jaeger\SpanContext as SpanContextClass;
 use const Jaeger\Constants\X_B3_PARENT_SPANID;

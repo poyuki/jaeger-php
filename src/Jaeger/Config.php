@@ -63,7 +63,7 @@ class Config
 
     public static function getInstance(): Config
     {
-        if (!(self::$instance instanceof self)) {
+        if (!isset(self::$instance)) {
             self::$instance = new self();
         }
 
@@ -94,19 +94,19 @@ class Config
         }
 
 
-        if ($this->transport === null) {
+        if (!isset($this->transport)) {
             $this->transport = new TransportUdp($agentHostPort);
         }
 
-        if ($this->reporter === null) {
+        if (!isset($this->reporter)) {
             $this->reporter = new RemoteReporter($this->transport);
         }
 
-        if ($this->sampler === null) {
+        if (!isset($this->sampler)) {
             $this->sampler = new ConstSampler(true);
         }
 
-        if ($this->scopeManager === null) {
+        if (!isset($this->scopeManager)) {
             $this->scopeManager = new ScopeManager();
         }
 
