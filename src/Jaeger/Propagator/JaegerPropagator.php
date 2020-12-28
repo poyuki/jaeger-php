@@ -19,7 +19,8 @@ declare(strict_types=1);
 namespace Jaeger\Propagator;
 
 use ArrayAccess;
-use Jaeger\SpanContext;
+use Jaeger\SpanContext as SpanContextClass;
+use OpenTracing\SpanContext;
 use const Jaeger\Constants\Jaeger_Baggage_Header;
 use const Jaeger\Constants\Jaeger_Debug_Header;
 use const Jaeger\Constants\Trace_Baggage_Header_Prefix;
@@ -54,7 +55,7 @@ class JaegerPropagator implements Propagator
             }
 
             if ($spanContext === null) {
-                $spanContext = new SpanContext(0, 0, 0, null, 0);
+                $spanContext = new SpanContextClass(0, 0, 0, null, 0);
             }
 
             if ($v instanceof ArrayAccess) {
@@ -76,7 +77,7 @@ class JaegerPropagator implements Propagator
                     $spanContext->withBaggageItem($safeKey, $v);
                 }
             } elseif ($k === Jaeger_Debug_Header) {
-                $spanContext->debugId = $v;
+                $spanContext->debugId = (int)$v;
             } elseif ($k === Jaeger_Baggage_Header) {
                 // Converts a comma separated key value pair list into a map
                 // e.g. key1=value1, key2=value2, key3 = value3

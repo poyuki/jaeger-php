@@ -23,12 +23,8 @@ use Jaeger\Transport\TransportInterface;
 
 class RemoteReporter implements ReporterInterface
 {
-
-    public TransportInterface $tran;
-
-    public function __construct(TransportInterface $tran)
+    public function __construct(public TransportInterface $tran)
     {
-        $this->tran = $tran;
     }
 
     public function report(Jaeger $jaeger): void

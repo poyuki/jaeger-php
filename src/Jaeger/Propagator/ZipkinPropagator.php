@@ -19,7 +19,8 @@ declare(strict_types=1);
 namespace Jaeger\Propagator;
 
 use Jaeger\Constants;
-use Jaeger\SpanContext;
+use OpenTracing\SpanContext;
+use Jaeger\SpanContext as SpanContextClass;
 use const Jaeger\Constants\X_B3_PARENT_SPANID;
 use const Jaeger\Constants\X_B3_SAMPLED;
 use const Jaeger\Constants\X_B3_SPANID;
@@ -30,12 +31,13 @@ class ZipkinPropagator implements Propagator
 
     public function inject(SpanContext $spanContext, string $format, array &$carrier): void
     {
-        $carrier[X_B3_TRACEID] = $spanContext->traceIdLowToString();
-        $carrier[X_B3_PARENT_SPANID] = $spanContext->parentIdToString();
-        $carrier[X_B3_SPANID] = $spanContext->spanIdToString();
-        $carrier[X_B3_SAMPLED] = $spanContext->flagsToString();
+        if ($spanContext instanceof SpanContextClass) {
+            $carrier[X_B3_TRACEID] = $spanContext->traceIdLowToString();
+            $carrier[X_B3_PARENT_SPANID] = $spanContext->parentIdToString();
+            $carrier[X_B3_SPANID] = $spanContext->spanIdToString();
+            $carrier[X_B3_SAMPLED] = $spanContext->flagsToString();
+        }
     }
-
 
     public function extract(string $format, array $carrier): ?SpanContext
     {
@@ -44,7 +46,7 @@ class ZipkinPropagator implements Propagator
         foreach ($carrier as $k => $val) {
             if (in_array($k, [X_B3_TRACEID, X_B3_PARENT_SPANID, X_B3_SPANID, X_B3_SAMPLED], true)) {
                 if ($spanContext === null) {
-                    $spanContext = new SpanContext(0, 0, 0, null, 0);
+                    $spanContext = new SpanContextClass(0, 0, 0);
                 }
 
                 continue;

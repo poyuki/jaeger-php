@@ -4,7 +4,8 @@ declare(strict_types=1);
 
 namespace Jaeger;
 
-use JetBrains\PhpStorm\Pure;
+use OpenTracing\Scope;
+use Jaeger\Scope as ScopeClass;
 
 class ScopeManager implements \OpenTracing\ScopeManager
 {
@@ -22,9 +23,9 @@ class ScopeManager implements \OpenTracing\ScopeManager
      * @param bool $finishSpanOnClose
      * @return Scope
      */
-    public function activate(\OpenTracing\Span $span, $finishSpanOnClose): Scope
+    public function activate(\OpenTracing\Span $span,bool $finishSpanOnClose = self::DEFAULT_FINISH_SPAN_ON_CLOSE): Scope
     {
-        $scope = new Scope($this, $span, $finishSpanOnClose);
+        $scope = new ScopeClass($this, $span, $finishSpanOnClose);
         $this->scopes[] = $scope;
 
         return $scope;
@@ -34,7 +35,7 @@ class ScopeManager implements \OpenTracing\ScopeManager
     /**
      * @return Scope|null
      */
-    #[Pure] public function getActive(): ?Scope
+    public function getActive(): ?Scope
     {
         if (count($this->scopes) === 0) {
             return null;

@@ -18,7 +18,7 @@ declare(strict_types=1);
 
 namespace Jaeger\Propagator;
 
-use Jaeger\SpanContext;
+use OpenTracing\SpanContext;
 
 interface Propagator
 {

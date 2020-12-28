@@ -49,6 +49,7 @@
     ],
     "app/code-analysis": "php vendor/bin/phpstan analyse --no-ansi --no-interaction --no-progress -l 5 src",
     "app/code-analysis-dev": "php vendor/bin/phpstan analyse -l 7 src",
+    "app/code-analysis-php8": "php vendor/bin/phpstan analyse -l 8 src",
     "app/code-style": "php vendor/bin/phpcs --standard=phpcs.xml --extensions=php",
     "app/code-style-fix": "php vendor/bin/phpcbf -p --standard=phpcs.xml --extensions=php",
     "app/tests": "php vendor/bin/codecept run unit"

@@ -23,14 +23,10 @@ use const Jaeger\Constants\SAMPLER_TYPE_TAG_KEY;
 
 class ConstSampler implements SamplerInterface
 {
-
-    private bool $decision;
-
     private array $tags = [];
 
-    public function __construct(bool $decision = true)
+    public function __construct(private bool $decision = true)
     {
-        $this->decision = $decision;
         $this->tags[SAMPLER_TYPE_TAG_KEY] = 'const';
         $this->tags[SAMPLER_PARAM_TAG_KEY] = $decision;
     }

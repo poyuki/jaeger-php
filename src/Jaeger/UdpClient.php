@@ -19,6 +19,7 @@ declare(strict_types=1);
 namespace Jaeger;
 
 use Jaeger\Thrift\AgentClient;
+use Socket;
 
 /**
  * send thrift to jaeger-agent
@@ -31,15 +32,15 @@ class UdpClient
 
     private string $host;
 
-    private string $post;
+    private int $port;
 
-    private $socket;
+    private false|Socket $socket;
 
     private AgentClient $agentClient;
 
     public function __construct(string $hostPost, AgentClient $agentClient)
     {
-        [$this->host, $this->post] = explode(":", $hostPost);
+        [$this->host, $this->port] = explode(":", $hostPost);
         $this->agentClient = $agentClient;
         $this->socket = socket_create(AF_INET, SOCK_DGRAM, SOL_UDP);
     }
@@ -57,7 +58,7 @@ class UdpClient
     /**
      * send thrift
      *
-     * @param $batch
+     * @param array $batch
      * @return bool|null
      */
     public function emitBatch(array $batch): ?bool
@@ -66,7 +67,7 @@ class UdpClient
         if (isset($buildThrift['len']) && $buildThrift['len'] && $this->isOpen()) {
             $len = $buildThrift['len'];
             $enitThrift = $buildThrift['thriftStr'];
-            $res = socket_sendto($this->socket, $enitThrift, $len, 0, $this->host, $this->post);
+            $res = socket_sendto($this->socket, $enitThrift, $len, 0, $this->host, $this->port);
             if ($res === false) {
                 throw new \RuntimeException("emit fails");
             }

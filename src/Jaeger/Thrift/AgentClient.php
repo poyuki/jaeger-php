@@ -28,7 +28,7 @@ use Thrift\Type\TType;
 class AgentClient
 {
 
-    public static $tptl;
+    public static TCompactProtocol $tptl;
 
     #[ArrayShape(['len' => "mixed", 'thriftStr' => "mixed"])]
     public function buildThrift(array $batch): array

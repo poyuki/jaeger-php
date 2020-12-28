@@ -27,41 +27,22 @@ class SpanContext implements \OpenTracing\SpanContext
     public int $traceIdHigh;
 
 
-    // spanID represents span ID that must be unique within its trace,
-    // but does not have to be globally unique.
-    public int $spanId;
-
-    // parentID refers to the ID of the parent span.
-    // Should be 0 if the current span is a root span.
-    public int $parentId;
-
-    // flags is a bitmap containing such bits as 'sampled' and 'debug'.
-    public int $flags;
-
-    // Distributed Context baggage. The is a snapshot in time.
-    // key => val
-    public ?array $baggage;
-
-    // debugID can be set to some correlation ID when the context is being
-    // extracted from a TextMap carrier.
-    public int $debugId;
+    public function __construct(public int $spanId, public int $parentId, public int $flags, public ?array $baggage = null, public int $debugId = 0)
+    {
+    }
 
 
-    public function __construct(int $spanId, int $parentId, int $flags, ?array $baggage = null, int $debugId = 0)
-    {}
-
-
-    public function getBaggageItem($key)
+    public function getBaggageItem($key): ?string
     {
         return $this->baggage[$key] ?? null;
     }
 
 
-    public function withBaggageItem($key, $value): bool
+    public function withBaggageItem($key, $value): ?\OpenTracing\SpanContext
     {
         $this->baggage[$key] = $value;
 
-        return true;
+        return $this;
     }
 
     public function getIterator()

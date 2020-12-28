@@ -20,14 +20,9 @@ namespace Jaeger;
 
 class Span implements \OpenTracing\Span
 {
-
-    private string $operationName;
-
     public int $startTime;
 
     public int $finishTime;
-
-    public ?\OpenTracing\SpanContext $spanContext = null;
 
     public int $duration = 0;
 
@@ -35,14 +30,14 @@ class Span implements \OpenTracing\Span
 
     public array $tags = [];
 
-    public array $references = [];
 
-    public function __construct(string $operationName, \OpenTracing\SpanContext $spanContext, $references, ?int $startTime = null)
-    {
-        $this->operationName = $operationName;
+    public function __construct(
+        private string $operationName,
+        public \OpenTracing\SpanContext $spanContext,
+        public array $references = [],
+        ?int $startTime = null
+    ) {
         $this->startTime = $startTime ?? $this->microtimeToInt();
-        $this->spanContext = $spanContext;
-        $this->references = $references;
     }
 
     /**
@@ -55,9 +50,9 @@ class Span implements \OpenTracing\Span
 
 
     /**
-     * @return \OpenTracing\SpanContext|null
+     * @return \OpenTracing\SpanContext
      */
-    public function getContext(): ?\OpenTracing\SpanContext
+    public function getContext(): \OpenTracing\SpanContext
     {
         return $this->spanContext;
     }
@@ -111,15 +106,14 @@ class Span implements \OpenTracing\Span
      * @return mixed
      * @throws SpanAlreadyFinished if the span is already finished
      */
-    public function addBaggageItem(string $key, string $value): mixed
+    public function addBaggageItem(string $key, string $value): void
     {
         $this->log([
             'event' => 'baggage',
             'key' => $key,
             'value' => $value,
         ]);
-
-        return $this->spanContext->withBaggageItem($key, $value);
+        $this->spanContext->withBaggageItem($key, $value);
     }
 
     /**

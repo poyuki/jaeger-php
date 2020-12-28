@@ -25,19 +25,14 @@ use Jaeger\Sampler\SamplerInterface;
 use OpenTracing\Exceptions\UnsupportedFormat;
 use OpenTracing\Formats;
 use OpenTracing\Reference;
+use OpenTracing\Span;
+use Jaeger\Span as SpanClass;
 use OpenTracing\SpanContext;
 use OpenTracing\StartSpanOptions;
 use OpenTracing\Tracer;
 
 class Jaeger implements Tracer
 {
-
-    private ReporterInterface $reporter;
-
-    private SamplerInterface $sampler;
-
-    private ScopeManager $scopeManager;
-
     private bool $gen128bit = false;
 
     public array $spans = [];
@@ -54,13 +49,10 @@ class Jaeger implements Tracer
 
     public function __construct(
         ?string $serverName,
-        ReporterInterface $reporter,
-        SamplerInterface $sampler,
-        ScopeManager $scopeManager
+        private ReporterInterface $reporter,
+        private SamplerInterface $sampler,
+        private ScopeManager $scopeManager
     ) {
-        $this->reporter = $reporter;
-        $this->sampler = $sampler;
-        $this->scopeManager = $scopeManager;
         $this->serverName = $serverName??($_SERVER['SERVER_NAME']??'unknown server');
         $this->setTags($this->sampler->getTags());
         $this->setTags($this->getEnvTags());
@@ -85,7 +77,7 @@ class Jaeger implements Tracer
      * @param array $options
      * @return Span
      */
-    public function startSpan(string $operationName, array $options = []): Span
+    public function startSpan(string $operationName, $options = []): Span
     {
 
         if (!($options instanceof StartSpanOptions)) {
@@ -116,8 +108,8 @@ class Jaeger implements Tracer
             }
         }
 
-        $startTime = $options->getStartTime() ? intval($options->getStartTime() * 1000000) : null;
-        $span = new Span($operationName, $spanContext, $options->getReferences(), $startTime);
+        $startTime = $options->getStartTime() ? (int)($options->getStartTime() * 1000000) : null;
+        $span = new SpanClass($operationName, $spanContext, $options->getReferences(), $startTime);
         if (!empty($options->getTags())) {
             foreach ($options->getTags() as $k => $tag) {
                 $span->setTag($k, $tag);
@@ -144,7 +136,7 @@ class Jaeger implements Tracer
      */
     public function inject(SpanContext $spanContext, $format, &$carrier): void
     {
-        if ($format == Formats\TEXT_MAP) {
+        if ($format === Formats\TEXT_MAP) {
             $this->propagator->inject($spanContext, $format, $carrier);
         } else {
             throw UnsupportedFormat::forFormat($format);
@@ -160,11 +152,11 @@ class Jaeger implements Tracer
      */
     public function extract($format, $carrier): ?SpanContext
     {
-        if ($format == Formats\TEXT_MAP) {
+        if ($format === Formats\TEXT_MAP) {
             return $this->propagator->extract($format, $carrier);
-        } else {
-            throw UnsupportedFormat::forFormat($format);
         }
+
+        throw UnsupportedFormat::forFormat($format);
     }
 
 
@@ -189,7 +181,7 @@ class Jaeger implements Tracer
     }
 
 
-    public function getActiveSpan()
+    public function getActiveSpan(): ?Span
     {
         $activeScope = $this->getScopeManager()->getActive();
         if ($activeScope === null) {

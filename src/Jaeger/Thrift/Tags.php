@@ -160,7 +160,7 @@ class Tags implements TStruct
                     'vType' => 'STRING',
                     'vStr' => is_string($v),
                 ],
-                };
+            };
         }
 
         return $thriftTags;

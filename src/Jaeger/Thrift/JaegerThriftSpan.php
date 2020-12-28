@@ -34,7 +34,7 @@ class JaegerThriftSpan
         $ip = $_SERVER['SERVER_ADDR'] ?? '0.0.0.0';
         $tags['peer.ipv4'] = $ip;
 
-        $port = $_SERVER['SERVER_PORT'] ?? '80';
+        $port = $_SERVER['SERVER_PORT'] ?? 80;
         $tags['peer.port'] = $port;
 
         $tags = array_merge($tags, $jaeger->tags);
