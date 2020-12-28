@@ -68,8 +68,8 @@ class UdpClient
         $buildThrift = $this->agentClient->buildThrift($batch);
         if (isset($buildThrift['len']) && $buildThrift['len'] && $this->isOpen()) {
             $len = $buildThrift['len'];
-            $enitThrift = $buildThrift['thriftStr'];
-            $res = socket_sendto($this->socket, $enitThrift, $len, 0, $this->host, $this->port);
+            $initThrift = $buildThrift['thriftStr'];
+            $res = socket_sendto($this->socket, $initThrift, $len, 0, $this->host, $this->port);
             if ($res === false) {
                 throw new \RuntimeException("emit fails");
             }
