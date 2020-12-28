@@ -44,7 +44,7 @@ class Jaeger implements Tracer
 
     public string $serverName = '';
 
-    public string $processThrift = '';
+    public array $processThrift = [];
 
     public Propagator $propagator;
 
