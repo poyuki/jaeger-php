@@ -84,6 +84,6 @@ class UdpClient
     public function close(): void
     {
         socket_close($this->socket);
-        $this->socket = null;
+        unset($this->socket);
     }
 }
