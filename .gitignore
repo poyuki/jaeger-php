@@ -2,6 +2,6 @@
 .buildpath
 .project
 .idea
-composer.lock
+#composer.lock
 vendor/*
 build
