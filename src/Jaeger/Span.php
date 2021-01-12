@@ -76,7 +76,7 @@ class Span implements \OpenTracing\Span
     }
 
 
-    public function setTag($key, $value): void
+    public function setTag(string $key, $value): void
     {
         $this->tags[$key] = $value;
     }
@@ -87,7 +87,6 @@ class Span implements \OpenTracing\Span
      *
      * @param array $fields [key => val]
      * @param int|float|\DateTimeInterface $timestamp
-     * @throws SpanAlreadyFinished if the span is already finished
      */
     public function log(array $fields = [], $timestamp = null): void
     {
@@ -103,8 +102,7 @@ class Span implements \OpenTracing\Span
      *
      * @param string $key
      * @param string $value
-     * @return mixed
-     * @throws SpanAlreadyFinished if the span is already finished
+     * @return void
      */
     public function addBaggageItem(string $key, string $value): void
     {

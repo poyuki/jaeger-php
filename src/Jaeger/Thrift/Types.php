@@ -18,8 +18,6 @@ declare(strict_types=1);
 
 namespace Jaeger\Thrift;
 
-use JetBrains\PhpStorm\Pure;
-
 class Types
 {
     public const TAG_TYPE_STRING = 0;
@@ -36,7 +34,6 @@ class Types
         self::TAG_TYPE_BINARY => "BINARY",
     ];
 
-    #[Pure]
     public static function stringToTagType($string): int | string
     {
         $flippedTags = array_flip(self::TAG_TYPE_STRINGS);
@@ -48,7 +45,6 @@ class Types
     }
 
 
-    #[Pure]
     public static function tagTypeToString($tagType): string
     {
         if (array_key_exists($tagType, self::TAG_TYPE_STRINGS)) {

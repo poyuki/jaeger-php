@@ -150,8 +150,9 @@ class Jaeger implements Tracer
      *
      * @param string $format
      * @param $carrier
+     * @return SpanContext|null
      */
-    public function extract($format, $carrier): ?SpanContext
+    public function extract(string $format, $carrier): ?SpanContext
     {
         if ($format === Formats\TEXT_MAP) {
             return $this->propagator->extract($format, $carrier);
@@ -193,7 +194,7 @@ class Jaeger implements Tracer
     }
 
 
-    public function startActiveSpan($operationName, $options = []): Scope
+    public function startActiveSpan(string $operationName, $options = []): Scope
     {
         if (!$options instanceof StartSpanOptions) {
             $options = StartSpanOptions::create($options);
