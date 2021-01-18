@@ -25,9 +25,6 @@ use OpenTracing\Reference;
 
 class JaegerThriftSpan
 {
-
-
-    #[ArrayShape(['serverName' => "mixed|string", 'tags' => "array"])]
     public function buildJaegerProcessThrift(Jaeger $jaeger): array
     {
         $tags = [];
@@ -67,7 +64,6 @@ class JaegerThriftSpan
         ];
     }
 
-
     private function buildTags($tags): array
     {
         $tagsObj = Tags::getInstance();
@@ -75,7 +71,6 @@ class JaegerThriftSpan
 
         return $tagsObj->buildTags();
     }
-
 
     private function buildLogs($logs): array
     {
@@ -93,17 +88,18 @@ class JaegerThriftSpan
         return $resultLogs;
     }
 
-
     private function buildReferences($references): array
     {
         $spanRef = [];
         foreach ($references as $ref) {
+            $type = -1;
             if ($ref->isType(Reference::CHILD_OF)) {
                 $type = SpanRefType::CHILD_OF;
             } elseif ($ref->isType(Reference::FOLLOWS_FROM)) {
                 $type = SpanRefType::FOLLOWS_FROM;
             }
-            $ctx = $ref->getContext();
+
+            $ctx = $ref->getSpanContext();
             $spanRef[] = [
                 'refType' => $type,
                 'traceIdLow' => $ctx->traceIdLow,
